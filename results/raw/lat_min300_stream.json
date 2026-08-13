@@ -1,0 +1,38 @@
+{
+  "run_id": "lat_min300",
+  "finished_at": "2026-08-13T23:57:43.756922+00:00",
+  "batches": 86,
+  "non_empty_batches": 85,
+  "input_rows": 22499,
+  "rows_written_cassandra": 22499,
+  "write_amplification": 1.0,
+  "tables": [
+    "trips_by_id"
+  ],
+  "unparseable": 0,
+  "late_events": 0,
+  "dlq_total": 0,
+  "cassandra_write_successes": 22499,
+  "cassandra_write_retries": 0,
+  "avg_retries_to_success_all_writes": 0.0,
+  "writes_needing_retry": 0,
+  "avg_retries_among_retried_writes": 0.0,
+  "mean_e2e_latency_ms_sampled": 1851.34,
+  "latency_samples": 22499,
+  "batch_seconds_p50": 0.6124,
+  "batch_seconds_p95": 1.678,
+  "batch_seconds_p99": 2.0577,
+  "failure_reasons": {},
+  "config": {
+    "backoff": "backoff=1s -> 2s -> 4s max_attempts=4 jitter=+/-10%",
+    "consistency": "QUORUM",
+    "allowed_lateness_sec": 120,
+    "late_policy": "dlq",
+    "max_offsets_per_trigger": 400,
+    "trigger_interval": "500 milliseconds",
+    "executor_cores": 3,
+    "total_cores": 6,
+    "partitions": 6,
+    "latency_sample_rate": 1.0
+  }
+}

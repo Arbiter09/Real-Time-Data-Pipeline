@@ -1,0 +1,20 @@
+{
+  "run_id": "lat_opt500",
+  "measured_at": "2026-08-13T23:55:27.990237+00:00",
+  "samples": 22476,
+  "sample_rate": 0.5,
+  "definition": "produced_at_ms -> cassandra write, milliseconds",
+  "min_ms": 298,
+  "p50_ms": 1791.0,
+  "p90_ms": 4828.5,
+  "p95_ms": 5579.5,
+  "p99_ms": 6652.2,
+  "p999_ms": 7287.6,
+  "max_ms": 7400,
+  "mean_ms": 2268.0,
+  "mean_is_not_the_headline": "p95 is the figure to quote; the mean sits below it and hides the tail a reliability reviewer cares about",
+  "sub_second_at": "none",
+  "pct_under_1s": 18.518,
+  "pct_under_500ms": 2.171,
+  "clock_caveat": "producer and consumer share a host clock; this measurement contains no clock skew and is not evidence about cross-host clock discipline"
+}

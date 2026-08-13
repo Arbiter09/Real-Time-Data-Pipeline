@@ -1,0 +1,40 @@
+{
+  "run_id": "pace_r1400",
+  "finished_at": "2026-08-13T23:51:54.055655+00:00",
+  "batches": 9,
+  "non_empty_batches": 8,
+  "input_rows": 125999,
+  "rows_written_cassandra": 377997,
+  "write_amplification": 3.0,
+  "tables": [
+    "trips_by_id",
+    "trips_by_driver_day",
+    "trips_by_city_hour"
+  ],
+  "unparseable": 0,
+  "late_events": 0,
+  "dlq_total": 0,
+  "cassandra_write_successes": 377997,
+  "cassandra_write_retries": 0,
+  "avg_retries_to_success_all_writes": 0.0,
+  "writes_needing_retry": 0,
+  "avg_retries_among_retried_writes": 0.0,
+  "mean_e2e_latency_ms_sampled": 18795.9,
+  "latency_samples": 6184,
+  "batch_seconds_p50": 14.6233,
+  "batch_seconds_p95": 29.3964,
+  "batch_seconds_p99": 29.3964,
+  "failure_reasons": {},
+  "config": {
+    "backoff": "backoff=1s -> 2s -> 4s max_attempts=4 jitter=+/-10%",
+    "consistency": "QUORUM",
+    "allowed_lateness_sec": 120,
+    "late_policy": "dlq",
+    "max_offsets_per_trigger": 200000,
+    "trigger_interval": "",
+    "executor_cores": 3,
+    "total_cores": 6,
+    "partitions": 6,
+    "latency_sample_rate": 0.05
+  }
+}
