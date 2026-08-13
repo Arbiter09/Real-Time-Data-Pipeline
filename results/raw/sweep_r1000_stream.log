@@ -1,0 +1,48 @@
+2026-08-13 23:29:10,011 INFO  [stream] prometheus metrics on :9109/metrics
+26/08/13 23:29:10 INFO SparkContext: Running Spark version 3.5.3
+26/08/13 23:29:10 INFO SparkContext: OS info Linux, 6.10.14-linuxkit, aarch64
+26/08/13 23:29:10 INFO SparkContext: Java version 11.0.24
+26/08/13 23:29:10 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+26/08/13 23:29:10 INFO ResourceUtils: ==============================================================
+26/08/13 23:29:10 INFO ResourceUtils: No custom resources configured for spark.driver.
+26/08/13 23:29:10 INFO ResourceUtils: ==============================================================
+26/08/13 23:29:10 INFO SparkContext: Submitted application: rtdp-trips-sweep_r1000
+26/08/13 23:29:10 INFO ResourceProfile: Default ResourceProfile created, executor resources: Map(cores -> name: cores, amount: 3, script: , vendor: , memory -> name: memory, amount: 1024, script: , vendor: , offHeap -> name: offHeap, amount: 0, script: , vendor: ), task resources: Map(cpus -> name: cpus, amount: 1.0)
+26/08/13 23:29:10 INFO ResourceProfile: Limiting resource is cpus at 3 tasks per executor
+26/08/13 23:29:10 INFO ResourceProfileManager: Added ResourceProfile id: 0
+26/08/13 23:29:10 INFO SecurityManager: Changing view acls to: spark
+26/08/13 23:29:10 INFO SecurityManager: Changing modify acls to: spark
+26/08/13 23:29:10 INFO SecurityManager: Changing view acls groups to: 
+26/08/13 23:29:10 INFO SecurityManager: Changing modify acls groups to: 
+26/08/13 23:29:10 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: spark; groups with view permissions: EMPTY; users with modify permissions: spark; groups with modify permissions: EMPTY
+26/08/13 23:29:10 INFO Utils: Successfully started service 'sparkDriver' on port 39193.
+26/08/13 23:29:10 INFO SparkEnv: Registering MapOutputTracker
+26/08/13 23:29:10 INFO SparkEnv: Registering BlockManagerMaster
+26/08/13 23:29:10 INFO BlockManagerMasterEndpoint: Using org.apache.spark.storage.DefaultTopologyMapper for getting topology information
+26/08/13 23:29:10 INFO BlockManagerMasterEndpoint: BlockManagerMasterEndpoint up
+26/08/13 23:29:10 INFO SparkEnv: Registering BlockManagerMasterHeartbeat
+26/08/13 23:29:10 INFO DiskBlockManager: Created local directory at /tmp/blockmgr-3f14ca8c-3718-4f2b-ba26-c4b0687502a3
+26/08/13 23:29:10 INFO MemoryStore: MemoryStore started with capacity 191.2 MiB
+26/08/13 23:29:10 INFO SparkEnv: Registering OutputCommitCoordinator
+26/08/13 23:29:10 INFO JettyUtils: Start Jetty 0.0.0.0:4040 for SparkUI
+26/08/13 23:29:10 INFO Utils: Successfully started service 'SparkUI' on port 4040.
+26/08/13 23:29:10 INFO StandaloneAppClient$ClientEndpoint: Connecting to master spark://spark-master:7077...
+26/08/13 23:29:10 INFO TransportClientFactory: Successfully created connection to spark-master/172.26.0.9:7077 after 15 ms (0 ms spent in bootstraps)
+26/08/13 23:29:10 INFO StandaloneSchedulerBackend: Connected to Spark cluster with app ID app-20260813232910-0002
+26/08/13 23:29:10 INFO StandaloneAppClient$ClientEndpoint: Executor added: app-20260813232910-0002/0 on worker-20260813231309-172.26.0.12-37613 (172.26.0.12:37613) with 3 core(s)
+26/08/13 23:29:10 INFO StandaloneSchedulerBackend: Granted executor ID app-20260813232910-0002/0 on hostPort 172.26.0.12:37613 with 3 core(s), 1024.0 MiB RAM
+26/08/13 23:29:10 INFO StandaloneAppClient$ClientEndpoint: Executor added: app-20260813232910-0002/1 on worker-20260813231309-172.26.0.13-34679 (172.26.0.13:34679) with 3 core(s)
+26/08/13 23:29:10 INFO StandaloneSchedulerBackend: Granted executor ID app-20260813232910-0002/1 on hostPort 172.26.0.13:34679 with 3 core(s), 1024.0 MiB RAM
+26/08/13 23:29:10 INFO Utils: Successfully started service 'org.apache.spark.network.netty.NettyBlockTransferService' on port 41159.
+26/08/13 23:29:10 INFO NettyBlockTransferService: Server created on spark-driver 0.0.0.0:41159
+26/08/13 23:29:10 INFO BlockManager: Using org.apache.spark.storage.RandomBlockReplicationPolicy for block replication policy
+26/08/13 23:29:10 INFO BlockManagerMaster: Registering BlockManager BlockManagerId(driver, spark-driver, 41159, None)
+26/08/13 23:29:10 INFO BlockManagerMasterEndpoint: Registering block manager spark-driver:41159 with 191.2 MiB RAM, BlockManagerId(driver, spark-driver, 41159, None)
+26/08/13 23:29:10 INFO BlockManagerMaster: Registered BlockManager BlockManagerId(driver, spark-driver, 41159, None)
+26/08/13 23:29:10 INFO BlockManager: Initialized BlockManager: BlockManagerId(driver, spark-driver, 41159, None)
+26/08/13 23:29:10 INFO StandaloneAppClient$ClientEndpoint: Executor updated: app-20260813232910-0002/1 is now RUNNING
+26/08/13 23:29:10 INFO StandaloneAppClient$ClientEndpoint: Executor updated: app-20260813232910-0002/0 is now RUNNING
+26/08/13 23:29:10 INFO StandaloneSchedulerBackend: SchedulerBackend is ready for scheduling beginning after reached minRegisteredResourcesRatio: 0.0
+2026-08-13 23:29:10,927 INFO  [stream] tables=['trips_by_id', 'trips_by_driver_day', 'trips_by_city_hour'] consistency=QUORUM backoff=1s -> 2s -> 4s max_attempts=4 jitter=+/-10% late_policy=dlq allowed_lateness=120s
+26/08/13 23:29:10 INFO SharedState: Setting hive.metastore.warehouse.dir ('null') to the value of spark.sql.warehouse.dir.
+26/08/13 23:29:11 INFO SharedState: Warehouse path is 'file:/opt/app/spark-warehouse'.

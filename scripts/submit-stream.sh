@@ -14,6 +14,14 @@ exec /opt/spark/bin/spark-submit \
   --conf spark.driver.bindAddress=0.0.0.0 \
   --conf spark.driver.memory="${SPARK_DRIVER_MEMORY:-640m}" \
   --conf spark.ui.port=4040 \
+  `# Executors on a shared host lose the CPU occasionally - a GC pause, a` \
+  `# compaction, a noisy neighbour. The defaults (10s heartbeat, 120s network` \
+  `# timeout) treat that as a dead executor and tear the job down. A run that` \
+  `# died this way cost a full sweep before these were raised.` \
+  --conf spark.executor.heartbeatInterval=20s \
+  --conf spark.network.timeout=600s \
+  --conf spark.storage.blockManagerSlaveTimeoutMs=600000 \
+  --conf spark.rpc.askTimeout=600s \
   --conf spark.sql.streaming.metricsEnabled=true \
   --conf spark.executorEnv.PYTHONPATH=/opt/app \
   --conf spark.executorEnv.RETRY_BACKOFF_SCHEDULE_MS="${RETRY_BACKOFF_SCHEDULE_MS:-1000,2000,4000}" \
