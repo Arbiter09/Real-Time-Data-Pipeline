@@ -137,11 +137,22 @@ fi
 echo
 echo "spark"
 if docker exec rtdp-spark-master curl -sf http://localhost:8080/json/ >/dev/null 2>&1; then
-  WORKERS=$(docker exec rtdp-spark-master curl -s http://localhost:8080/json/ 2>/dev/null \
-            | grep -o '"aliveworkers":[0-9]*' | grep -oE '[0-9]+')
+  MASTER_JSON=$(docker exec rtdp-spark-master curl -s http://localhost:8080/json/ 2>/dev/null)
+  # Count entries in the `workers` array. The master JSON pretty-prints with
+  # spaces around the colon, so a naive '"id":' grep finds nothing and reports
+  # a healthy cluster as having no workers.
+  WORKERS=$(echo "$MASTER_JSON" | grep -cE '"id"[[:space:]]*:[[:space:]]*"worker-')
+  CORES=$(echo "$MASTER_JSON" | grep -oE '"cores"[[:space:]]*:[[:space:]]*[0-9]+' \
+          | grep -oE '[0-9]+$' | paste -sd+ - | bc 2>/dev/null || echo 0)
   ok "master responding"
   if [ "${WORKERS:-0}" -ge 1 ]; then
-    ok "${WORKERS} live worker(s)"
+    ok "${WORKERS} live worker(s), ${CORES:-?} total cores"
+    if [ "${WORKERS}" -lt 2 ]; then
+      # Two workers is what the base compose declares. One means the smoke
+      # override is active, and benchmark numbers taken on it describe the
+      # override rather than the system.
+      warn "only ${WORKERS} worker - benchmarks expect 2 (is the smoke override active?)"
+    fi
   else
     bad "no live workers registered"
   fi
