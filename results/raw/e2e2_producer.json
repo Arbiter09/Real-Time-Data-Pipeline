@@ -1,0 +1,63 @@
+{
+  "run_id": "e2e2",
+  "started_at": "2026-08-13T22:40:11.459430+00:00",
+  "topic": "trips.raw",
+  "target_rate": 300.0,
+  "duration_sec": 40.006,
+  "generated": 11999,
+  "duplicates_emitted": 612,
+  "acked": 12611,
+  "delivery_failures": 0,
+  "dlq": 0,
+  "achieved_rate": 299.93,
+  "acked_rate": 315.23,
+  "rate_attainment_pct": 99.98,
+  "late_events_generated": 0,
+  "malformed_generated": 117,
+  "librdkafka_txretries": 0,
+  "librdkafka_req_timeouts": 0,
+  "app_retry_stats": {
+    "attempts": 12611,
+    "successes": 12611,
+    "failures_exhausted": 0,
+    "retries_before_success": 0,
+    "avg_retries_to_success": 0.0,
+    "total_backoff_ms": 0.0,
+    "failure_reasons": {}
+  },
+  "backoff": "backoff=1s -> 2s -> 4s max_attempts=4 jitter=+/-10%",
+  "partition_distribution": {
+    "0": {
+      "count": 2098,
+      "pct": 16.64
+    },
+    "1": {
+      "count": 2089,
+      "pct": 16.56
+    },
+    "2": {
+      "count": 2067,
+      "pct": 16.39
+    },
+    "3": {
+      "count": 2109,
+      "pct": 16.72
+    },
+    "4": {
+      "count": 2184,
+      "pct": 17.32
+    },
+    "5": {
+      "count": 2064,
+      "pct": 16.37
+    }
+  },
+  "partition_imbalance_ratio": 1.039,
+  "config": {
+    "bootstrap": "kafka1:9092,kafka2:9092,kafka3:9092",
+    "enable_idempotence": true,
+    "acks": "all",
+    "linger_ms": 20,
+    "message_timeout_ms": 120000
+  }
+}

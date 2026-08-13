@@ -1,0 +1,19 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.DS_Store
+.idea/
+.vscode/
+
+# Runtime state - never committed
+checkpoints/
+data/
+logs/
+airflow/logs/
+airflow/*.db
+
+# Harness output: the *reports* are committed (they back the README numbers),
+# the multi-hundred-MB intermediate captures are not.
+results/raw/**/*.ndjson
+results/raw/**/*.tmp

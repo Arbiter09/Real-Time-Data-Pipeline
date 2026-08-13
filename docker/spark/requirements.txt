@@ -1,0 +1,7 @@
+# Deliberately minimal. The Spark image does NOT get a Python Kafka client:
+# DLQ records are written through Spark's own Kafka sink using the jars baked
+# in above, so there is exactly one Kafka client implementation in the
+# streaming path instead of two that could be configured differently.
+cassandra-driver==3.29.2
+prometheus-client==0.17.1
+python-dateutil==2.9.0.post0

@@ -1,0 +1,24 @@
+# Reduced-footprint override for correctness smoke tests ONLY.
+#
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.smoke.yml up -d ...
+#
+# NEVER benchmark with this file. It runs a single Spark worker with a small
+# executor so the pipeline can be exercised end to end on a memory-constrained
+# host; any throughput or latency number produced under it is a number about
+# this override, not about the system. The measurement runs in bench/ use the
+# base compose file and assert the worker count they expect.
+services:
+  spark-worker-1:
+    environment:
+      SPARK_NO_DAEMONIZE: "true"
+      SPARK_WORKER_CORES: "2"
+      SPARK_WORKER_MEMORY: "900m"
+      SPARK_WORKER_WEBUI_PORT: "8081"
+    mem_limit: 1100m
+
+  spark-master:
+    mem_limit: 500m
+
+  spark-driver:
+    mem_limit: 900m

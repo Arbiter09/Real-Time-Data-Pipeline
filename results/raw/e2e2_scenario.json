@@ -1,0 +1,202 @@
+{
+  "run_id": "e2e2",
+  "scenario": "smoke_e2e",
+  "started_at": "2026-08-13T22:41:10.189427+00:00",
+  "config": {
+    "target_rate": 300.0,
+    "duration_sec": 40.0,
+    "backoff": "1000,2000,4000",
+    "max_attempts": 4,
+    "tables": "all",
+    "partitions": 6,
+    "total_cores": 2,
+    "executor_cores": 2,
+    "executor_memory": "640m",
+    "consistency": "QUORUM",
+    "malformed_ratio": 0.01,
+    "late_ratio": 0.0,
+    "duplicate_ratio": 0.05,
+    "fault": "none"
+  },
+  "producer": {
+    "run_id": "e2e2",
+    "started_at": "2026-08-13T22:40:11.459430+00:00",
+    "topic": "trips.raw",
+    "target_rate": 300.0,
+    "duration_sec": 40.006,
+    "generated": 11999,
+    "duplicates_emitted": 612,
+    "acked": 12611,
+    "delivery_failures": 0,
+    "dlq": 0,
+    "achieved_rate": 299.93,
+    "acked_rate": 315.23,
+    "rate_attainment_pct": 99.98,
+    "late_events_generated": 0,
+    "malformed_generated": 117,
+    "librdkafka_txretries": 0,
+    "librdkafka_req_timeouts": 0,
+    "app_retry_stats": {
+      "attempts": 12611,
+      "successes": 12611,
+      "failures_exhausted": 0,
+      "retries_before_success": 0,
+      "avg_retries_to_success": 0.0,
+      "total_backoff_ms": 0.0,
+      "failure_reasons": {}
+    },
+    "backoff": "backoff=1s -> 2s -> 4s max_attempts=4 jitter=+/-10%",
+    "partition_distribution": {
+      "0": {
+        "count": 2098,
+        "pct": 16.64
+      },
+      "1": {
+        "count": 2089,
+        "pct": 16.56
+      },
+      "2": {
+        "count": 2067,
+        "pct": 16.39
+      },
+      "3": {
+        "count": 2109,
+        "pct": 16.72
+      },
+      "4": {
+        "count": 2184,
+        "pct": 17.32
+      },
+      "5": {
+        "count": 2064,
+        "pct": 16.37
+      }
+    },
+    "partition_imbalance_ratio": 1.039,
+    "config": {
+      "bootstrap": "kafka1:9092,kafka2:9092,kafka3:9092",
+      "enable_idempotence": true,
+      "acks": "all",
+      "linger_ms": 20,
+      "message_timeout_ms": 120000
+    }
+  },
+  "stream": {},
+  "cassandra_counts": {
+    "trips_by_id": 10862,
+    "trips_by_driver_day": 10582,
+    "trips_by_city_hour": 11069
+  },
+  "dlq_detail": {
+    "topic": "trips.dlq",
+    "records": 112,
+    "distinct_event_ids": 105,
+    "records_without_event_id": 0,
+    "by_stage": {
+      "parse": 112
+    },
+    "by_reason": {
+      "PermanentDefect": 112
+    },
+    "mean_retry_count_when_retried": 0.0,
+    "routing_preview": {
+      "reinject": 0,
+      "direct_write": 0,
+      "park": 112
+    },
+    "sample": [
+      {
+        "original_payload": "{\"event_id\":\"45df10e2-8d72-441a-832d-c928a8b7390e\",\"trip_id\":\"e3d48726-2c63-452a-a2e9-c00600134954\",\"event_time\":\"2026-08-13T22:40:09.084Z\",\"produced_at_ms\":1786660811843,\"city_id\":\"nyc\",\"driver_id\":\"d-003252\",\"rider_id\":\"r-032465\",\"pickup_zone_id\":11,\"dropoff_zone_id\":18,\"vehicle_class\":\"comfort\",\"payment_type\":\"wallet\",\"distance_km\":3.365,\"duration_sec\":543,\"fare_amount\":null,\"surge_multiplier\":2.79,\"status\":\"completed\",\"producer_id\":\"p-1\",\"schema_version\":1,\"_injected_defect\":\"null_fare_amount\"}",
+        "failure_reason": "PermanentDefect: fare_amount is null",
+        "failure_stage": "parse",
+        "retry_count": 0,
+        "first_failed_at_ms": 1786660815749,
+        "quarantined_at_ms": 1786660815749,
+        "event_id": "45df10e2-8d72-441a-832d-c928a8b7390e",
+        "source_topic": "trips.raw",
+        "source_partition": null,
+        "source_offset": null,
+        "replay_count": 0,
+        "host": "spark-worker-1",
+        "dlq_schema_version": 1,
+        "_partition": 1,
+        "_offset": 41
+      },
+      {
+        "original_payload": "{\"event_id\":\"bd280038-ad47-4a55-86b5-8acd25aab18b\",\"trip_id\":\"92cbbec5-ddce-4ee9-8a92-f334b2b9476e\",\"event_time\":\"2026-08-13T22:40:11.572Z\",\"produced_at_ms\":1786660813260,\"city_id\":\"aus\",\"driver_id\":\"d-003196\",\"rider_id\":\"r-026270\",\"pickup_zone_id\":38,\"dropoff_zone_id\":17,\"vehicle_class\":\"economy\",\"payment_type\":\"card\",\"distance_km\":6.369,\"duration_sec\":935,\"fare_amount\":null,\"surge_multiplier\":1.99,\"status\":\"completed\",\"producer_id\":\"p-1\",\"schema_version\":1,\"_injected_defect\":\"null_fare_amount\"}",
+        "failure_reason": "PermanentDefect: fare_amount is null",
+        "failure_stage": "parse",
+        "retry_count": 0,
+        "first_failed_at_ms": 1786660816946,
+        "quarantined_at_ms": 1786660816946,
+        "event_id": "bd280038-ad47-4a55-86b5-8acd25aab18b",
+        "source_topic": "trips.raw",
+        "source_partition": null,
+        "source_offset": null,
+        "replay_count": 0,
+        "host": "spark-worker-1",
+        "dlq_schema_version": 1,
+        "_partition": 1,
+        "_offset": 42
+      },
+      {
+        "original_payload": "{\"event_id\":\"601fa475-dc5d-48a1-b093-efe2f9be3312\",\"trip_id\":\"bbfa267a-bbe0-4959-bf27-d15fa397ee9e\",\"event_time\":\"2026-08-13T22:40:13.101Z\",\"produced_at_ms\":1786660813123,\"city_id\":\"chi\",\"driver_id\":\"d-004771\",\"rider_id\":\"r-002743\",\"pickup_zone_id\":6,\"dropoff_zone_id\":13,\"vehicle_class\":\"economy\",\"payment_type\":\"card\",\"distance_km\":1.75,\"duration_sec\":379,\"fare_amount\":null,\"surge_multiplier\":1.31,\"status\":\"completed\",\"producer_id\":\"p-1\",\"schema_version\":1,\"_injected_defect\":\"null_fare_amount\"}",
+        "failure_reason": "PermanentDefect: fare_amount is null",
+        "failure_stage": "parse",
+        "retry_count": 0,
+        "first_failed_at_ms": 1786660817214,
+        "quarantined_at_ms": 1786660817214,
+        "event_id": "601fa475-dc5d-48a1-b093-efe2f9be3312",
+        "source_topic": "trips.raw",
+        "source_partition": null,
+        "source_offset": null,
+        "replay_count": 0,
+        "host": "spark-worker-1",
+        "dlq_schema_version": 1,
+        "_partition": 1,
+        "_offset": 43
+      }
+    ]
+  },
+  "reconciliation": {
+    "kafka_acked": 12611,
+    "duplicates_emitted": 612,
+    "expected_distinct_events": 11999,
+    "written_distinct_trips": 10862,
+    "dlq_messages": 112,
+    "dlq_distinct_events": 105,
+    "accounted_for": 10967,
+    "unaccounted_silent_loss": 1032,
+    "silent_loss_pct": 8.6007,
+    "note": "unaccounted = expected_distinct - (written + dlq). A positive value is real, silent loss."
+  },
+  "lag": {
+    "samples": 50,
+    "max_observed": 0,
+    "final": 0,
+    "longest_monotonic_growth_run": 0,
+    "drained": true,
+    "drain_seconds": 4.02
+  },
+  "batches": {
+    "count": 32,
+    "non_empty": 31
+  },
+  "fault": null,
+  "health_gate": {
+    "containers": {
+      "rtdp-spark-driver": "Up 10 minutes",
+      "rtdp-spark-worker-1": "Up 12 minutes",
+      "rtdp-spark-master": "Up 12 minutes (healthy)",
+      "rtdp-producer": "Up 13 minutes",
+      "rtdp-cassandra3": "Up About a minute (healthy)",
+      "rtdp-cassandra2": "Up 20 minutes (healthy)",
+      "rtdp-postgres": "Up 21 minutes (healthy)",
+      "rtdp-cassandra1": "Up 3 minutes (healthy)",
+      "rtdp-kafka2": "Up 22 minutes (healthy)",
+      "rtdp-kafka1": "Up 22 minutes (healthy)",
+      "rtdp-kafka3": "Up 22 minutes (healthy)"
+    },
+    "cassandra_peers": 7
+  }
+}
