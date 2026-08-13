@@ -1,0 +1,262 @@
+2026-08-13 23:15:02,633 INFO  [stream] prometheus metrics on :9109/metrics
+26/08/13 23:15:02 INFO SparkContext: Running Spark version 3.5.3
+26/08/13 23:15:02 INFO SparkContext: OS info Linux, 6.10.14-linuxkit, aarch64
+26/08/13 23:15:02 INFO SparkContext: Java version 11.0.24
+26/08/13 23:15:02 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+26/08/13 23:15:02 INFO ResourceUtils: ==============================================================
+26/08/13 23:15:02 INFO ResourceUtils: No custom resources configured for spark.driver.
+26/08/13 23:15:02 INFO ResourceUtils: ==============================================================
+26/08/13 23:15:02 INFO SparkContext: Submitted application: rtdp-trips-sweep_r500
+26/08/13 23:15:02 INFO ResourceProfile: Default ResourceProfile created, executor resources: Map(cores -> name: cores, amount: 3, script: , vendor: , memory -> name: memory, amount: 1024, script: , vendor: , offHeap -> name: offHeap, amount: 0, script: , vendor: ), task resources: Map(cpus -> name: cpus, amount: 1.0)
+26/08/13 23:15:02 INFO ResourceProfile: Limiting resource is cpus at 3 tasks per executor
+26/08/13 23:15:02 INFO ResourceProfileManager: Added ResourceProfile id: 0
+26/08/13 23:15:02 INFO SecurityManager: Changing view acls to: spark
+26/08/13 23:15:02 INFO SecurityManager: Changing modify acls to: spark
+26/08/13 23:15:02 INFO SecurityManager: Changing view acls groups to: 
+26/08/13 23:15:02 INFO SecurityManager: Changing modify acls groups to: 
+26/08/13 23:15:02 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: spark; groups with view permissions: EMPTY; users with modify permissions: spark; groups with modify permissions: EMPTY
+26/08/13 23:15:03 INFO Utils: Successfully started service 'sparkDriver' on port 45661.
+26/08/13 23:15:03 INFO SparkEnv: Registering MapOutputTracker
+26/08/13 23:15:03 INFO SparkEnv: Registering BlockManagerMaster
+26/08/13 23:15:03 INFO BlockManagerMasterEndpoint: Using org.apache.spark.storage.DefaultTopologyMapper for getting topology information
+26/08/13 23:15:03 INFO BlockManagerMasterEndpoint: BlockManagerMasterEndpoint up
+26/08/13 23:15:03 INFO SparkEnv: Registering BlockManagerMasterHeartbeat
+26/08/13 23:15:03 INFO DiskBlockManager: Created local directory at /tmp/blockmgr-05764cef-e49f-469d-9ba3-90878691c490
+26/08/13 23:15:03 INFO MemoryStore: MemoryStore started with capacity 191.2 MiB
+26/08/13 23:15:03 INFO SparkEnv: Registering OutputCommitCoordinator
+26/08/13 23:15:03 INFO JettyUtils: Start Jetty 0.0.0.0:4040 for SparkUI
+26/08/13 23:15:03 INFO Utils: Successfully started service 'SparkUI' on port 4040.
+26/08/13 23:15:03 INFO StandaloneAppClient$ClientEndpoint: Connecting to master spark://spark-master:7077...
+26/08/13 23:15:03 INFO TransportClientFactory: Successfully created connection to spark-master/172.26.0.9:7077 after 21 ms (0 ms spent in bootstraps)
+26/08/13 23:15:03 INFO StandaloneSchedulerBackend: Connected to Spark cluster with app ID app-20260813231503-0000
+26/08/13 23:15:03 INFO Utils: Successfully started service 'org.apache.spark.network.netty.NettyBlockTransferService' on port 33361.
+26/08/13 23:15:03 INFO NettyBlockTransferService: Server created on spark-driver 0.0.0.0:33361
+26/08/13 23:15:03 INFO BlockManager: Using org.apache.spark.storage.RandomBlockReplicationPolicy for block replication policy
+26/08/13 23:15:03 INFO StandaloneAppClient$ClientEndpoint: Executor added: app-20260813231503-0000/0 on worker-20260813231309-172.26.0.12-37613 (172.26.0.12:37613) with 3 core(s)
+26/08/13 23:15:03 INFO StandaloneSchedulerBackend: Granted executor ID app-20260813231503-0000/0 on hostPort 172.26.0.12:37613 with 3 core(s), 1024.0 MiB RAM
+26/08/13 23:15:03 INFO StandaloneAppClient$ClientEndpoint: Executor added: app-20260813231503-0000/1 on worker-20260813231309-172.26.0.13-34679 (172.26.0.13:34679) with 3 core(s)
+26/08/13 23:15:03 INFO BlockManagerMaster: Registering BlockManager BlockManagerId(driver, spark-driver, 33361, None)
+26/08/13 23:15:03 INFO StandaloneSchedulerBackend: Granted executor ID app-20260813231503-0000/1 on hostPort 172.26.0.13:34679 with 3 core(s), 1024.0 MiB RAM
+26/08/13 23:15:03 INFO BlockManagerMasterEndpoint: Registering block manager spark-driver:33361 with 191.2 MiB RAM, BlockManagerId(driver, spark-driver, 33361, None)
+26/08/13 23:15:03 INFO BlockManagerMaster: Registered BlockManager BlockManagerId(driver, spark-driver, 33361, None)
+26/08/13 23:15:03 INFO BlockManager: Initialized BlockManager: BlockManagerId(driver, spark-driver, 33361, None)
+26/08/13 23:15:03 INFO StandaloneAppClient$ClientEndpoint: Executor updated: app-20260813231503-0000/1 is now RUNNING
+26/08/13 23:15:03 INFO StandaloneAppClient$ClientEndpoint: Executor updated: app-20260813231503-0000/0 is now RUNNING
+26/08/13 23:15:03 INFO StandaloneSchedulerBackend: SchedulerBackend is ready for scheduling beginning after reached minRegisteredResourcesRatio: 0.0
+2026-08-13 23:15:04,051 INFO  [stream] tables=['trips_by_id', 'trips_by_driver_day', 'trips_by_city_hour'] consistency=QUORUM backoff=1s -> 2s -> 4s max_attempts=4 jitter=+/-10% late_policy=dlq allowed_lateness=120s
+26/08/13 23:15:04 INFO SharedState: Setting hive.metastore.warehouse.dir ('null') to the value of spark.sql.warehouse.dir.
+26/08/13 23:15:04 INFO SharedState: Warehouse path is 'file:/opt/app/spark-warehouse'.
+26/08/13 23:15:05 WARN KafkaSourceProvider: Kafka option 'kafka.group.id' has been set on this query, it is
+ not recommended to set this option. This option is unsafe to use since multiple concurrent
+ queries or sources using the same group id will interfere with each other as they are part
+ of the same consumer group. Restarted queries may also suffer interference from the
+ previous run having the same group id. The user should have only one query per group id,
+ and/or set the option 'kafka.session.timeout.ms' to be very small so that the Kafka
+ consumers from the previous query are marked dead by the Kafka group coordinator before the
+ restarted query starts running.
+    
+26/08/13 23:15:06 INFO StandaloneSchedulerBackend$StandaloneDriverEndpoint: Registered executor NettyRpcEndpointRef(spark-client://Executor) (172.26.0.13:55824) with ID 1,  ResourceProfileId 0
+26/08/13 23:15:06 INFO StandaloneSchedulerBackend$StandaloneDriverEndpoint: Registered executor NettyRpcEndpointRef(spark-client://Executor) (172.26.0.12:60762) with ID 0,  ResourceProfileId 0
+26/08/13 23:15:06 INFO BlockManagerMasterEndpoint: Registering block manager 172.26.0.12:33789 with 413.9 MiB RAM, BlockManagerId(0, 172.26.0.12, 33789, None)
+26/08/13 23:15:06 INFO BlockManagerMasterEndpoint: Registering block manager 172.26.0.13:36775 with 413.9 MiB RAM, BlockManagerId(1, 172.26.0.13, 36775, None)
+2026-08-13 23:15:06,956 INFO  [stream] Callback Server Starting
+2026-08-13 23:15:06,957 INFO  [stream] Socket listening on ('127.0.0.1', 43365)
+26/08/13 23:15:06 INFO StateStoreCoordinatorRef: Registered StateStoreCoordinator endpoint
+26/08/13 23:15:07 INFO ResolveWriteToStream: Checkpoint root /opt/checkpoints/trips resolved to file:/opt/checkpoints/trips.
+26/08/13 23:15:07 WARN ResolveWriteToStream: spark.sql.adaptive.enabled is not supported in streaming DataFrames/Datasets and will be disabled.
+26/08/13 23:15:07 INFO CheckpointFileManager: Writing atomically to file:/opt/checkpoints/trips/metadata using temp file file:/opt/checkpoints/trips/.metadata.e4b2b645-8943-40ca-b072-af8762c8b8ef.tmp
+26/08/13 23:15:07 INFO CheckpointFileManager: Renamed temp file file:/opt/checkpoints/trips/.metadata.e4b2b645-8943-40ca-b072-af8762c8b8ef.tmp to file:/opt/checkpoints/trips/metadata
+26/08/13 23:15:07 INFO MicroBatchExecution: Starting trips-ingest-sweep_r500 [id = 5da9527e-7857-4232-8ac8-0bb01da9e844, runId = d9f97f5c-6db6-4453-bbd0-5973b82c9d9a]. Use file:/opt/checkpoints/trips to store the query checkpoint.
+2026-08-13 23:15:07,141 INFO  [stream] query id=5da9527e-7857-4232-8ac8-0bb01da9e844 checkpoint=/opt/checkpoints/trips
+26/08/13 23:15:07 INFO MicroBatchExecution: Reading table [org.apache.spark.sql.kafka010.KafkaSourceProvider$KafkaTable@1a0c031b] from DataSourceV2 named 'kafka' [org.apache.spark.sql.kafka010.KafkaSourceProvider@fb1d5bb]
+26/08/13 23:15:07 WARN KafkaSourceProvider: Kafka option 'kafka.group.id' has been set on this query, it is
+ not recommended to set this option. This option is unsafe to use since multiple concurrent
+ queries or sources using the same group id will interfere with each other as they are part
+ of the same consumer group. Restarted queries may also suffer interference from the
+ previous run having the same group id. The user should have only one query per group id,
+ and/or set the option 'kafka.session.timeout.ms' to be very small so that the Kafka
+ consumers from the previous query are marked dead by the Kafka group coordinator before the
+ restarted query starts running.
+    
+26/08/13 23:15:07 INFO OffsetSeqLog: BatchIds found from listing: 
+26/08/13 23:15:07 INFO OffsetSeqLog: BatchIds found from listing: 
+26/08/13 23:15:07 INFO MicroBatchExecution: Starting new streaming query.
+26/08/13 23:15:07 INFO MicroBatchExecution: Stream started from {}
+26/08/13 23:15:07 INFO AdminClientConfig: AdminClientConfig values: 
+	auto.include.jmx.reporter = true
+	bootstrap.servers = [kafka1:9092, kafka2:9092, kafka3:9092]
+	client.dns.lookup = use_all_dns_ips
+	client.id = 
+	connections.max.idle.ms = 300000
+	default.api.timeout.ms = 60000
+	metadata.max.age.ms = 300000
+	metric.reporters = []
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	receive.buffer.bytes = 65536
+	reconnect.backoff.max.ms = 1000
+	reconnect.backoff.ms = 50
+	request.timeout.ms = 30000
+	retries = 2147483647
+	retry.backoff.ms = 100
+	sasl.client.callback.handler.class = null
+	sasl.jaas.config = null
+	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+	sasl.kerberos.min.time.before.relogin = 60000
+	sasl.kerberos.service.name = null
+	sasl.kerberos.ticket.renew.jitter = 0.05
+	sasl.kerberos.ticket.renew.window.factor = 0.8
+	sasl.login.callback.handler.class = null
+	sasl.login.class = null
+	sasl.login.connect.timeout.ms = null
+	sasl.login.read.timeout.ms = null
+	sasl.login.refresh.buffer.seconds = 300
+	sasl.login.refresh.min.period.seconds = 60
+	sasl.login.refresh.window.factor = 0.8
+	sasl.login.refresh.window.jitter = 0.05
+	sasl.login.retry.backoff.max.ms = 10000
+	sasl.login.retry.backoff.ms = 100
+	sasl.mechanism = GSSAPI
+	sasl.oauthbearer.clock.skew.seconds = 30
+	sasl.oauthbearer.expected.audience = null
+	sasl.oauthbearer.expected.issuer = null
+	sasl.oauthbearer.jwks.endpoint.refresh.ms = 3600000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.max.ms = 10000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.ms = 100
+	sasl.oauthbearer.jwks.endpoint.url = null
+	sasl.oauthbearer.scope.claim.name = scope
+	sasl.oauthbearer.sub.claim.name = sub
+	sasl.oauthbearer.token.endpoint.url = null
+	security.protocol = PLAINTEXT
+	security.providers = null
+	send.buffer.bytes = 131072
+	socket.connection.setup.timeout.max.ms = 30000
+	socket.connection.setup.timeout.ms = 10000
+	ssl.cipher.suites = null
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.3]
+	ssl.endpoint.identification.algorithm = https
+	ssl.engine.factory.class = null
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.certificate.chain = null
+	ssl.keystore.key = null
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLSv1.3
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.certificates = null
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+
+26/08/13 23:15:07 WARN AdminClientConfig: These configurations '[key.deserializer, value.deserializer, enable.auto.commit, max.poll.records, group.id, auto.offset.reset]' were supplied but are not used yet.
+26/08/13 23:15:07 INFO AppInfoParser: Kafka version: 3.4.1
+26/08/13 23:15:07 INFO AppInfoParser: Kafka commitId: 8a516edc2755df89
+26/08/13 23:15:07 INFO AppInfoParser: Kafka startTimeMs: 1786662907406
+26/08/13 23:15:07 INFO CheckpointFileManager: Writing atomically to file:/opt/checkpoints/trips/sources/0/0 using temp file file:/opt/checkpoints/trips/sources/0/.0.7208bfe8-6257-4d93-9617-7d6b46414d04.tmp
+26/08/13 23:15:07 INFO CheckpointFileManager: Renamed temp file file:/opt/checkpoints/trips/sources/0/.0.7208bfe8-6257-4d93-9617-7d6b46414d04.tmp to file:/opt/checkpoints/trips/sources/0/0
+26/08/13 23:15:07 INFO KafkaMicroBatchStream: Initial offsets: {"trips.raw":{"2":0,"5":0,"4":0,"1":0,"3":0,"0":0}}
+26/08/13 23:15:07 INFO CheckpointFileManager: Writing atomically to file:/opt/checkpoints/trips/offsets/0 using temp file file:/opt/checkpoints/trips/offsets/.0.43943d37-1972-44ae-b03c-4a88cce47217.tmp
+26/08/13 23:15:07 INFO CheckpointFileManager: Renamed temp file file:/opt/checkpoints/trips/offsets/.0.43943d37-1972-44ae-b03c-4a88cce47217.tmp to file:/opt/checkpoints/trips/offsets/0
+26/08/13 23:15:07 INFO MicroBatchExecution: Committed offsets for batch 0. Metadata OffsetSeqMetadata(0,1786662907691,Map(spark.sql.streaming.stateStore.providerClass -> org.apache.spark.sql.execution.streaming.state.HDFSBackedStateStoreProvider, spark.sql.streaming.join.stateFormatVersion -> 2, spark.sql.streaming.stateStore.compression.codec -> lz4, spark.sql.streaming.stateStore.rocksdb.formatVersion -> 5, spark.sql.streaming.statefulOperator.useStrictDistribution -> true, spark.sql.streaming.flatMapGroupsWithState.stateFormatVersion -> 2, spark.sql.streaming.multipleWatermarkPolicy -> min, spark.sql.streaming.aggregation.stateFormatVersion -> 2, spark.sql.shuffle.partitions -> 6))
+26/08/13 23:15:08 INFO KafkaOffsetReaderAdmin: Partitions added: Map()
+26/08/13 23:15:08 INFO KafkaOffsetReaderAdmin: Partitions added: Map()
+26/08/13 23:15:08 INFO KafkaOffsetReaderAdmin: Partitions added: Map()
+26/08/13 23:15:08 INFO KafkaOffsetReaderAdmin: Partitions added: Map()
+26/08/13 23:15:08 INFO CodeGenerator: Code generated in 585.731542 ms
+26/08/13 23:15:08 INFO CodeGenerator: Code generated in 21.611916 ms
+2026-08-13 23:15:09,069 INFO  [stream] Python Server ready to receive messages
+2026-08-13 23:15:09,070 INFO  [stream] Received command c on object id p0
+26/08/13 23:15:09 INFO CodeGenerator: Code generated in 48.29225 ms
+26/08/13 23:15:09 INFO CodeGenerator: Code generated in 25.13075 ms
+26/08/13 23:15:09 INFO CodeGenerator: Code generated in 45.294833 ms
+26/08/13 23:15:09 INFO SparkContext: Starting job: start at <unknown>:0
+26/08/13 23:15:09 INFO DAGScheduler: Registering RDD 14 (start at <unknown>:0) as input to shuffle 0
+26/08/13 23:15:09 INFO DAGScheduler: Got job 0 (start at <unknown>:0) with 1 output partitions
+26/08/13 23:15:09 INFO DAGScheduler: Final stage: ResultStage 1 (start at <unknown>:0)
+26/08/13 23:15:09 INFO DAGScheduler: Parents of final stage: List(ShuffleMapStage 0)
+26/08/13 23:15:09 INFO DAGScheduler: Missing parents: List()
+26/08/13 23:15:09 INFO DAGScheduler: Submitting ResultStage 1 (MapPartitionsRDD[17] at start at <unknown>:0), which has no missing parents
+26/08/13 23:15:09 INFO MemoryStore: Block broadcast_0 stored as values in memory (estimated size 12.5 KiB, free 191.2 MiB)
+26/08/13 23:15:09 INFO MemoryStore: Block broadcast_0_piece0 stored as bytes in memory (estimated size 5.9 KiB, free 191.2 MiB)
+26/08/13 23:15:09 INFO BlockManagerInfo: Added broadcast_0_piece0 in memory on spark-driver:33361 (size: 5.9 KiB, free: 191.2 MiB)
+26/08/13 23:15:09 INFO SparkContext: Created broadcast 0 from broadcast at DAGScheduler.scala:1585
+26/08/13 23:15:09 INFO DAGScheduler: Submitting 1 missing tasks from ResultStage 1 (MapPartitionsRDD[17] at start at <unknown>:0) (first 15 tasks are for partitions Vector(0))
+26/08/13 23:15:09 INFO TaskSchedulerImpl: Adding task set 1.0 with 1 tasks resource profile 0
+26/08/13 23:15:09 INFO TaskSetManager: Starting task 0.0 in stage 1.0 (TID 0) (172.26.0.12, executor 0, partition 0, PROCESS_LOCAL, 9003 bytes) 
+26/08/13 23:15:10 INFO BlockManagerInfo: Added broadcast_0_piece0 in memory on 172.26.0.12:33789 (size: 5.9 KiB, free: 413.9 MiB)
+26/08/13 23:15:11 INFO MapOutputTrackerMasterEndpoint: Asked to send map output locations for shuffle 0 to 172.26.0.12:60762
+26/08/13 23:15:11 INFO TaskSetManager: Finished task 0.0 in stage 1.0 (TID 0) in 1899 ms on 172.26.0.12 (executor 0) (1/1)
+26/08/13 23:15:11 INFO TaskSchedulerImpl: Removed TaskSet 1.0, whose tasks have all completed, from pool 
+26/08/13 23:15:11 INFO DAGScheduler: ResultStage 1 (start at <unknown>:0) finished in 2.290 s
+26/08/13 23:15:11 INFO DAGScheduler: Job 0 is finished. Cancelling potential speculative or zombie tasks for this job
+26/08/13 23:15:11 INFO TaskSchedulerImpl: Killing all running tasks in stage 1: Stage finished
+26/08/13 23:15:11 INFO DAGScheduler: Job 0 finished: start at <unknown>:0, took 2.365937 s
+2026-08-13 23:15:11,842 INFO  [stream] batch=0 in=0 written=0 late=0 dlq=0 2.76s (0 rows/s)
+26/08/13 23:15:11 INFO MapPartitionsRDD: Removing RDD 9 from persistence list
+26/08/13 23:15:11 INFO BlockManager: Removing RDD 9
+26/08/13 23:15:11 INFO CheckpointFileManager: Writing atomically to file:/opt/checkpoints/trips/commits/0 using temp file file:/opt/checkpoints/trips/commits/.0.3338d20a-a884-4529-ab92-b90a04914668.tmp
+26/08/13 23:15:11 INFO CheckpointFileManager: Renamed temp file file:/opt/checkpoints/trips/commits/.0.3338d20a-a884-4529-ab92-b90a04914668.tmp to file:/opt/checkpoints/trips/commits/0
+26/08/13 23:15:11 INFO MicroBatchExecution: Streaming query made progress: {
+  "id" : "5da9527e-7857-4232-8ac8-0bb01da9e844",
+  "runId" : "d9f97f5c-6db6-4453-bbd0-5973b82c9d9a",
+  "name" : "trips-ingest-sweep_r500",
+  "timestamp" : "2026-08-13T23:15:07.161Z",
+  "batchId" : 0,
+  "numInputRows" : 0,
+  "inputRowsPerSecond" : 0.0,
+  "processedRowsPerSecond" : 0.0,
+  "durationMs" : {
+    "addBatch" : 3825,
+    "commitOffsets" : 38,
+    "getBatch" : 9,
+    "latestOffset" : 520,
+    "queryPlanning" : 343,
+    "triggerExecution" : 4777,
+    "walCommit" : 21
+  },
+  "eventTime" : {
+    "watermark" : "1970-01-01T00:00:00.000Z"
+  },
+  "stateOperators" : [ ],
+  "sources" : [ {
+    "description" : "KafkaV2[Subscribe[trips.raw]]",
+    "startOffset" : null,
+    "endOffset" : {
+      "trips.raw" : {
+        "2" : 0,
+        "5" : 0,
+        "4" : 0,
+        "1" : 0,
+        "3" : 0,
+        "0" : 0
+      }
+    },
+    "latestOffset" : {
+      "trips.raw" : {
+        "2" : 0,
+        "5" : 0,
+        "4" : 0,
+        "1" : 0,
+        "3" : 0,
+        "0" : 0
+      }
+    },
+    "numInputRows" : 0,
+    "inputRowsPerSecond" : 0.0,
+    "processedRowsPerSecond" : 0.0,
+    "metrics" : {
+      "avgOffsetsBehindLatest" : "0.0",
+      "maxOffsetsBehindLatest" : "0",
+      "minOffsetsBehindLatest" : "0"
+    }
+  } ],
+  "sink" : {
+    "description" : "ForeachBatchSink",
+    "numOutputRows" : -1
+  }
+}

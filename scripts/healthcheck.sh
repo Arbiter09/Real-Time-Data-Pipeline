@@ -138,12 +138,20 @@ echo
 echo "spark"
 if docker exec rtdp-spark-master curl -sf http://localhost:8080/json/ >/dev/null 2>&1; then
   MASTER_JSON=$(docker exec rtdp-spark-master curl -s http://localhost:8080/json/ 2>/dev/null)
-  # Count entries in the `workers` array. The master JSON pretty-prints with
-  # spaces around the colon, so a naive '"id":' grep finds nothing and reports
-  # a healthy cluster as having no workers.
-  WORKERS=$(echo "$MASTER_JSON" | grep -cE '"id"[[:space:]]*:[[:space:]]*"worker-')
-  CORES=$(echo "$MASTER_JSON" | grep -oE '"cores"[[:space:]]*:[[:space:]]*[0-9]+' \
-          | grep -oE '[0-9]+$' | paste -sd+ - | bc 2>/dev/null || echo 0)
+  # Parse properly rather than grepping. The master JSON carries a top-level
+  # `cores` key as well as one per worker, so summing every "cores" match
+  # reported 12 cores for a cluster that actually had 6 - and that number goes
+  # straight into the topology column of a results table.
+  read -r WORKERS CORES <<<"$(echo "$MASTER_JSON" | python3 -c '
+import json, sys
+try:
+    d = json.load(sys.stdin)
+    w = d.get("workers", [])
+    alive = [x for x in w if str(x.get("state", "ALIVE")).upper() == "ALIVE"]
+    print(len(alive), sum(int(x.get("cores", 0)) for x in alive))
+except Exception:
+    print(0, 0)
+' 2>/dev/null)"
   ok "master responding"
   if [ "${WORKERS:-0}" -ge 1 ]; then
     ok "${WORKERS} live worker(s), ${CORES:-?} total cores"
