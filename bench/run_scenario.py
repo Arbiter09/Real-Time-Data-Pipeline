@@ -373,29 +373,41 @@ class Scenario:
             target = self.args.fault_target or "rtdp-spark-worker-2"
         elif f == "kill_cassandra":
             target = self.args.fault_target or "rtdp-cassandra3"
+        elif f == "kill_cassandra_quorum":
+            # TWO nodes. With RF=3 and CL=QUORUM, killing one node changes
+            # nothing observable - quorum is still 2 of 3, which is the point
+            # of the single-node test. To force writes to actually FAIL and
+            # exercise the retry/DLQ path, quorum has to become unreachable.
+            target = self.args.fault_target or "rtdp-cassandra2,rtdp-cassandra3"
         else:
             raise ValueError(f"unknown fault {f}")
 
-        self.log(f"INJECTING FAULT: kill {target}")
+        targets = [t.strip() for t in target.split(",") if t.strip()]
+        self.log(f"INJECTING FAULT: kill {targets}")
         pre_lag = self._latest_lag()
         t_kill = time.time()
         # SIGKILL, not `docker stop`. A graceful shutdown lets Kafka hand off
         # leadership cleanly, which tests an orderly restart rather than the
         # crash this is supposed to simulate.
-        sh(["docker", "kill", "--signal=KILL", target], timeout=60)
-        self.mark("fault_injected", target=target, action=action, pre_lag=pre_lag)
+        for t in targets:
+            sh(["docker", "kill", "--signal=KILL", t], timeout=60)
+        self.mark("fault_injected", target=target, targets=targets,
+                  action=action, pre_lag=pre_lag)
 
         recovery = self._await_recovery(t_kill)
 
         if self.args.restart_after > 0:
             time.sleep(self.args.restart_after)
-            self.log(f"restarting {target}")
-            sh(["docker", "start", target], timeout=120)
-            self.mark("fault_target_restarted", target=target)
-            restored = self._await_container_health(target)
+            self.log(f"restarting {targets}")
+            for t in targets:
+                sh(["docker", "start", t], timeout=120)
+                self.mark("fault_target_restarted", target=t)
+            restored = max((self._await_container_health(t) or 0) for t in targets)
             recovery["target_healthy_seconds"] = restored
 
-        return {"fault": f, "target": target, "killed_at": t_kill, **recovery}
+        return {"fault": f, "target": target, "targets": targets,
+                "killed_at": t_kill, "dead_for_sec": self.args.restart_after,
+                **recovery}
 
     def _await_recovery(self, t_kill: float, timeout: int = 240) -> Dict[str, Any]:
         """First successful non-empty batch after the kill = pipeline recovered.
@@ -703,7 +715,8 @@ def main(argv: Optional[List[str]] = None) -> int:
     p.add_argument("--trigger-interval", default="")
     p.add_argument("--with-rollup", action="store_true")
     p.add_argument("--fault", default="none",
-                   choices=["none", "kill_broker", "kill_executor", "kill_cassandra"])
+                   choices=["none", "kill_broker", "kill_executor",
+                            "kill_cassandra", "kill_cassandra_quorum"])
     p.add_argument("--fault-at", type=float, default=30,
                    help="seconds after producer start to inject the fault")
     p.add_argument("--fault-target", default=None)
