@@ -1,0 +1,42 @@
+{
+  "run_id": "probe1000",
+  "finished_at": "2026-08-13T23:09:41.518343+00:00",
+  "batches": 25,
+  "non_empty_batches": 24,
+  "input_rows": 89999,
+  "rows_written_cassandra": 89978,
+  "write_amplification": 1.0,
+  "tables": [
+    "trips_by_id"
+  ],
+  "unparseable": 0,
+  "late_events": 0,
+  "dlq_total": 21,
+  "cassandra_write_successes": 89978,
+  "cassandra_write_retries": 1620,
+  "avg_retries_to_success_all_writes": 0.018,
+  "writes_needing_retry": 1611,
+  "avg_retries_among_retried_writes": 1.006,
+  "mean_e2e_latency_ms_sampled": 10865.56,
+  "latency_samples": 17798,
+  "batch_seconds_p50": 2.8581,
+  "batch_seconds_p95": 29.5552,
+  "batch_seconds_p99": 35.8463,
+  "failure_reasons": {
+    "NoHostAvailable": 1223,
+    "RecursionError": 7,
+    "WriteTimeout": 474
+  },
+  "config": {
+    "backoff": "backoff=1s -> 2s -> 4s max_attempts=4 jitter=+/-10%",
+    "consistency": "QUORUM",
+    "allowed_lateness_sec": 120,
+    "late_policy": "dlq",
+    "max_offsets_per_trigger": 200000,
+    "trigger_interval": "",
+    "executor_cores": 2,
+    "total_cores": 2,
+    "partitions": 6,
+    "latency_sample_rate": 0.2
+  }
+}
