@@ -1,0 +1,40 @@
+{
+  "run_id": "sweep_r2000",
+  "finished_at": "2026-08-13T23:35:05.968279+00:00",
+  "batches": 7,
+  "non_empty_batches": 6,
+  "input_rows": 179999,
+  "rows_written_cassandra": 539997,
+  "write_amplification": 3.0,
+  "tables": [
+    "trips_by_id",
+    "trips_by_driver_day",
+    "trips_by_city_hour"
+  ],
+  "unparseable": 0,
+  "late_events": 0,
+  "dlq_total": 0,
+  "cassandra_write_successes": 539997,
+  "cassandra_write_retries": 0,
+  "avg_retries_to_success_all_writes": 0.0,
+  "writes_needing_retry": 0,
+  "avg_retries_among_retried_writes": 0.0,
+  "mean_e2e_latency_ms_sampled": 36014.75,
+  "latency_samples": 9024,
+  "batch_seconds_p50": 16.7637,
+  "batch_seconds_p95": 51.9048,
+  "batch_seconds_p99": 51.9048,
+  "failure_reasons": {},
+  "config": {
+    "backoff": "backoff=1s -> 2s -> 4s max_attempts=4 jitter=+/-10%",
+    "consistency": "QUORUM",
+    "allowed_lateness_sec": 120,
+    "late_policy": "dlq",
+    "max_offsets_per_trigger": 200000,
+    "trigger_interval": "",
+    "executor_cores": 3,
+    "total_cores": 6,
+    "partitions": 6,
+    "latency_sample_rate": 0.05
+  }
+}

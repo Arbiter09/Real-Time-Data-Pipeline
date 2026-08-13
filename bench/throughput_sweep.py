@@ -13,6 +13,19 @@ A step counts as SUSTAINED only if all of these hold:
      on, so the benchmark and the alert agree on what "unhealthy" means.
   3. The backlog fully drained within the drain timeout.
   4. Reconciliation shows zero unaccounted events.
+  5. THE CONSUMER KEPT PACE: the post-production drain took no longer than
+     `--max-drain-ratio` of the production window.
+
+Criterion 5 exists because criteria 2 and 3 were not sufficient, and the first
+run of this sweep proved it. With `maxOffsetsPerTrigger` set large, Spark
+claims every available offset on each trigger, so `offsetsBehindLatest` reads
+~0 even while a single batch takes 52 seconds to process. Lag looked perfect at
+2000/s while the run needed 90s of production plus 70s of drain - the consumer
+was 1.8x behind and the lag gauge could not see it.
+
+The drain ratio catches exactly that: if the consumer needed a long tail after
+the producer stopped, it was never keeping up. Effective consumer throughput,
+`events / (produce_window + drain)`, is reported per step for the same reason.
 
 The reported number is the highest rate where every step at or below it
 sustained. Reporting the highest *individual* success would let a lucky step
@@ -73,7 +86,18 @@ def run_step(rate: float, args: argparse.Namespace, idx: int) -> Dict[str, Any]:
     drained = bool(lag.get("drained"))
     unaccounted = rec.get("unaccounted_silent_loss", 0)
 
+    duration = float(args.duration)
+    drain_s = lag.get("drain_seconds") or 0.0
+    written = rec.get("written_distinct_trips") or 0
+    effective = written / (duration + drain_s) if (duration + drain_s) else 0.0
+    drain_ratio = drain_s / duration if duration else 0.0
+
     reasons = []
+    if drain_ratio > args.max_drain_ratio:
+        reasons.append(
+            f"consumer did not keep pace: drain took {drain_s:.0f}s after a "
+            f"{duration:.0f}s window (ratio {drain_ratio:.2f} > "
+            f"{args.max_drain_ratio})")
     if attainment < 95:
         reasons.append(f"producer attained only {attainment}% of target")
     if growth_run > args.max_lag_growth_run:
@@ -98,7 +122,9 @@ def run_step(rate: float, args: argparse.Namespace, idx: int) -> Dict[str, Any]:
         "lag_max": lag.get("max_observed"),
         "lag_final": lag.get("final"),
         "lag_growth_run": growth_run,
-        "drain_seconds": lag.get("drain_seconds"),
+        "drain_seconds": drain_s,
+        "drain_ratio": round(drain_ratio, 3),
+        "effective_consumer_rate": round(effective, 1),
         "rows_written_cassandra": stream.get("rows_written_cassandra"),
         "write_amplification": stream.get("write_amplification"),
         "batch_seconds_p95": stream.get("batch_seconds_p95"),
@@ -120,6 +146,9 @@ def main(argv: Optional[List[str]] = None) -> int:
     p.add_argument("--drain-timeout", type=int, default=300)
     p.add_argument("--max-lag-growth-run", type=int, default=5,
                    help="consecutive rising lag samples tolerated per step")
+    p.add_argument("--max-drain-ratio", type=float, default=0.25,
+                   help="drain time / produce window above which the consumer "
+                        "is judged not to have kept pace")
     p.add_argument("--stop-after-failures", type=int, default=2)
     p.add_argument("--settle", type=float, default=20,
                    help="seconds between steps for the stack to settle")
@@ -185,12 +214,14 @@ def main(argv: Optional[List[str]] = None) -> int:
     print("\n" + "=" * 72)
     print("  THROUGHPUT SWEEP")
     print("=" * 72)
-    print(f"  {'target':>8} {'achieved':>9} {'lag max':>9} {'growth':>7} "
-          f"{'drain':>7}  verdict")
+    print(f"  {'target':>8} {'achieved':>9} {'effective':>10} {'drain':>7} "
+          f"{'ratio':>6} {'p95 batch':>10}  verdict")
     for s in steps:
         print(f"  {s['rate']:>8.0f} {s.get('achieved_rate') or 0:>9.0f} "
-              f"{s.get('lag_max') or 0:>9} {s.get('lag_growth_run') or 0:>7} "
-              f"{s.get('drain_seconds') or 0:>7}  "
+              f"{s.get('effective_consumer_rate') or 0:>10.0f} "
+              f"{s.get('drain_seconds') or 0:>7.1f} "
+              f"{s.get('drain_ratio') or 0:>6.2f} "
+              f"{s.get('batch_seconds_p95') or 0:>10.1f}  "
               f"{'sustained' if s['sustained'] else 'FAILED'}")
     print("-" * 72)
     print(f"  SUSTAINED RATE: {report['sustained_rate']} events/sec")
