@@ -1,0 +1,136 @@
+{
+  "uid": "rtdp-pipeline",
+  "title": "RTDP - Streaming Pipeline Health",
+  "description": "Lag first, throughput second. Lag is the signal that says whether the pipeline is keeping up; throughput only says what it did.",
+  "tags": ["rtdp", "streaming"],
+  "timezone": "utc",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "5s",
+  "time": {"from": "now-30m", "to": "now"},
+  "templating": {"list": []},
+  "annotations": {"list": []},
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "Consumer lag - offsets behind latest (THE health signal)",
+      "description": "From Spark's own Kafka source metrics. Structured Streaming keeps offsets in its checkpoint and registers no consumer group, so a group-lag exporter would report nothing here. Flat or falling = healthy. Rising across consecutive intervals = the consumer is losing to the producer.",
+      "gridPos": {"h": 9, "w": 16, "x": 0, "y": 0},
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {"lineWidth": 2, "fillOpacity": 12, "showPoints": "never"},
+          "thresholds": {"mode": "absolute", "steps": [
+            {"color": "green", "value": null},
+            {"color": "orange", "value": 50000},
+            {"color": "red", "value": 100000}
+          ]}
+        },
+        "overrides": []
+      },
+      "targets": [
+        {"refId": "A", "expr": "rtdp_stream_kafka_max_offsets_behind_latest", "legendFormat": "max lag"},
+        {"refId": "B", "expr": "rtdp_stream_kafka_avg_offsets_behind_latest", "legendFormat": "avg lag"}
+      ]
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Lag trend (2m slope)",
+      "description": "Positive and sustained is the alerting condition. A positive spike that decays is a burst, not an incident.",
+      "gridPos": {"h": 9, "w": 8, "x": 16, "y": 0},
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {"mode": "absolute", "steps": [
+            {"color": "green", "value": null},
+            {"color": "red", "value": 0.001}
+          ]}
+        }
+      },
+      "options": {"colorMode": "background", "graphMode": "area", "textMode": "auto"},
+      "targets": [
+        {"refId": "A", "expr": "deriv(rtdp_stream_kafka_max_offsets_behind_latest[2m])", "legendFormat": "slope"}
+      ]
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "Micro-batch duration percentiles",
+      "description": "The leading indicator: batch duration climbs before lag does.",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 9},
+      "fieldConfig": {"defaults": {"unit": "s", "custom": {"lineWidth": 2, "fillOpacity": 0}}},
+      "targets": [
+        {"refId": "A", "expr": "histogram_quantile(0.50, rate(rtdp_stream_batch_duration_seconds_bucket[2m]))", "legendFormat": "p50"},
+        {"refId": "B", "expr": "histogram_quantile(0.95, rate(rtdp_stream_batch_duration_seconds_bucket[2m]))", "legendFormat": "p95"},
+        {"refId": "C", "expr": "histogram_quantile(0.99, rate(rtdp_stream_batch_duration_seconds_bucket[2m]))", "legendFormat": "p99"}
+      ]
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "Throughput - produced vs processed",
+      "description": "A persistent gap between these two lines is what lag is integrating.",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 9},
+      "fieldConfig": {"defaults": {"unit": "reqps", "custom": {"lineWidth": 2, "fillOpacity": 8}}},
+      "targets": [
+        {"refId": "A", "expr": "rtdp_producer_actual_rate", "legendFormat": "producer actual"},
+        {"refId": "B", "expr": "rtdp_producer_target_rate", "legendFormat": "producer target"},
+        {"refId": "C", "expr": "rtdp_stream_processed_rows_per_second", "legendFormat": "stream processed"}
+      ]
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "End-to-end latency (produced_at -> Cassandra write)",
+      "description": "Sampled at LATENCY_SAMPLE_RATE. p95 is the number worth claiming; a mean would hide the tail this dashboard exists to show.",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 17},
+      "fieldConfig": {"defaults": {"unit": "ms", "custom": {"lineWidth": 2, "fillOpacity": 0}}},
+      "targets": [
+        {"refId": "A", "expr": "histogram_quantile(0.50, rate(rtdp_stream_e2e_latency_ms_bucket[2m]))", "legendFormat": "p50"},
+        {"refId": "B", "expr": "histogram_quantile(0.95, rate(rtdp_stream_e2e_latency_ms_bucket[2m]))", "legendFormat": "p95"},
+        {"refId": "C", "expr": "histogram_quantile(0.99, rate(rtdp_stream_e2e_latency_ms_bucket[2m]))", "legendFormat": "p99"}
+      ]
+    },
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "Reliability - DLQ and retries",
+      "description": "DLQ entries are quarantined, not lost. Exhausted retries are the ones that got there the expensive way.",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 17},
+      "fieldConfig": {"defaults": {"unit": "cps", "custom": {"lineWidth": 2, "fillOpacity": 10}}},
+      "targets": [
+        {"refId": "A", "expr": "sum by (stage) (rate(rtdp_stream_dlq_total[2m]))", "legendFormat": "dlq {{stage}}"},
+        {"refId": "B", "expr": "rate(rtdp_stream_cassandra_retries_total[2m])", "legendFormat": "cassandra retries"},
+        {"refId": "C", "expr": "rate(rtdp_stream_cassandra_exhausted_total[2m])", "legendFormat": "retries exhausted"},
+        {"refId": "D", "expr": "rate(rtdp_stream_late_events_total[2m])", "legendFormat": "late events"}
+      ]
+    },
+    {
+      "id": 7,
+      "type": "timeseries",
+      "title": "Producer client internals (librdkafka)",
+      "description": "txretries is the client's own counter, not an estimate. It climbs visibly during a broker kill.",
+      "gridPos": {"h": 7, "w": 12, "x": 0, "y": 25},
+      "fieldConfig": {"defaults": {"unit": "short", "custom": {"lineWidth": 2, "fillOpacity": 0}}},
+      "targets": [
+        {"refId": "A", "expr": "sum(rtdp_producer_broker_txretries)", "legendFormat": "request retries"},
+        {"refId": "B", "expr": "sum(rtdp_producer_broker_req_timeouts)", "legendFormat": "request timeouts"},
+        {"refId": "C", "expr": "rtdp_producer_queue_depth", "legendFormat": "local queue depth"}
+      ]
+    },
+    {
+      "id": 8,
+      "type": "timeseries",
+      "title": "Kafka topic offsets (from kafka-exporter)",
+      "description": "Topic-level view. kafka-exporter is scraped for what it genuinely knows - the state of the log - not for this consumer's lag.",
+      "gridPos": {"h": 7, "w": 12, "x": 12, "y": 25},
+      "fieldConfig": {"defaults": {"unit": "short", "custom": {"lineWidth": 2, "fillOpacity": 0}}},
+      "targets": [
+        {"refId": "A", "expr": "sum by (topic) (rate(kafka_topic_partition_current_offset[2m]))", "legendFormat": "{{topic}} writes/s"},
+        {"refId": "B", "expr": "sum by (topic) (kafka_topic_partition_current_offset)", "legendFormat": "{{topic}} total offset"}
+      ]
+    }
+  ]
+}

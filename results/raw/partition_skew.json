@@ -1,0 +1,119 @@
+{
+  "events": 100000,
+  "partitions": 6,
+  "seed": 42,
+  "strategies": {
+    "trip_id": {
+      "total_events": 100000,
+      "partitions": 6,
+      "per_partition": [
+        16668,
+        16611,
+        16706,
+        16629,
+        16700,
+        16686
+      ],
+      "per_partition_pct": [
+        16.67,
+        16.61,
+        16.71,
+        16.63,
+        16.7,
+        16.69
+      ],
+      "ideal_per_partition": 16666.7,
+      "imbalance_ratio": 1.002,
+      "hottest_partition_pct": 16.71,
+      "coldest_partition_pct": 16.61,
+      "empty_partitions": 0,
+      "distinct_keys": 100000
+    },
+    "city_id": {
+      "total_events": 100000,
+      "partitions": 6,
+      "per_partition": [
+        33967,
+        0,
+        5990,
+        28978,
+        6030,
+        25035
+      ],
+      "per_partition_pct": [
+        33.97,
+        0.0,
+        5.99,
+        28.98,
+        6.03,
+        25.04
+      ],
+      "ideal_per_partition": 16666.7,
+      "imbalance_ratio": 2.038,
+      "hottest_partition_pct": 33.97,
+      "coldest_partition_pct": 0.0,
+      "empty_partitions": 1,
+      "distinct_keys": 8
+    },
+    "driver_id": {
+      "total_events": 100000,
+      "partitions": 6,
+      "per_partition": [
+        16739,
+        16547,
+        16133,
+        16513,
+        16641,
+        17427
+      ],
+      "per_partition_pct": [
+        16.74,
+        16.55,
+        16.13,
+        16.51,
+        16.64,
+        17.43
+      ],
+      "ideal_per_partition": 16666.7,
+      "imbalance_ratio": 1.046,
+      "hottest_partition_pct": 17.43,
+      "coldest_partition_pct": 16.13,
+      "empty_partitions": 0,
+      "distinct_keys": 5000
+    },
+    "rider_id": {
+      "total_events": 100000,
+      "partitions": 6,
+      "per_partition": [
+        16562,
+        16768,
+        16367,
+        16774,
+        17043,
+        16486
+      ],
+      "per_partition_pct": [
+        16.56,
+        16.77,
+        16.37,
+        16.77,
+        17.04,
+        16.49
+      ],
+      "ideal_per_partition": 16666.7,
+      "imbalance_ratio": 1.023,
+      "hottest_partition_pct": 17.04,
+      "coldest_partition_pct": 16.37,
+      "empty_partitions": 0,
+      "distinct_keys": 43218
+    }
+  },
+  "verdict": {
+    "chosen_key": "trip_id",
+    "chosen_imbalance": 1.002,
+    "rejected_key": "city_id",
+    "rejected_imbalance": 2.038,
+    "skew_multiple": 2.03,
+    "note": "city_id has only 8 distinct values across 6 partitions, so partition assignment is decided by 8 hash values and cannot balance regardless of volume."
+  }
+}

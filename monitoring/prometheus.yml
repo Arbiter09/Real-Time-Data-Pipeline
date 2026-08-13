@@ -1,0 +1,34 @@
+global:
+  scrape_interval: 5s
+  evaluation_interval: 10s
+  external_labels:
+    stack: rtdp
+
+rule_files:
+  - /etc/prometheus/alerts.yml
+
+scrape_configs:
+  # Pipeline-internal metrics. The consumer-lag series lives here rather than
+  # on kafka-exporter: Spark Structured Streaming keeps offsets in its
+  # checkpoint and never registers a Kafka consumer group, so a group-lag
+  # exporter has nothing to report for this consumer. See common/metrics.py.
+  - job_name: rtdp-stream
+    static_configs:
+      - targets: ["spark-driver:9109"]
+        labels: {component: stream}
+
+  - job_name: rtdp-producer
+    static_configs:
+      - targets: ["producer:9108"]
+        labels: {component: producer}
+
+  # Topic-level view: partition offsets, topic throughput, ISR health. Useful
+  # for what it does know, which is the state of the log itself.
+  - job_name: kafka
+    static_configs:
+      - targets: ["kafka-exporter:9308"]
+        labels: {component: kafka}
+
+  - job_name: prometheus
+    static_configs:
+      - targets: ["localhost:9090"]

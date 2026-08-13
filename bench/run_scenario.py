@@ -458,7 +458,14 @@ class Scenario:
         counts = {}
         for t in ("trips_by_id", "trips_by_driver_day", "trips_by_city_hour"):
             try:
-                out = cqlsh(f"SELECT COUNT(*) FROM rtdp.{t};", timeout=600)
+                # CONSISTENCY ALL, not cqlsh's default ONE. A count taken at ONE
+                # on a ring that recently bounced a node can disagree with
+                # itself between tables while hinted handoff catches up, and
+                # that disagreement reads as loss in the reconciliation. This
+                # bug produced a fake 400-row gap between two tables holding
+                # identical data before it was caught.
+                out = cqlsh(f"CONSISTENCY ALL; SELECT COUNT(*) FROM rtdp.{t};",
+                            timeout=600)
                 num = 0
                 for line in out.splitlines():
                     s = line.strip()

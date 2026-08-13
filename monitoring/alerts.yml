@@ -1,0 +1,113 @@
+groups:
+  - name: rtdp-pipeline-health
+    rules:
+
+      # ===================================================================
+      # THE ALERT THAT MATTERS (Section 7.4).
+      #
+      # Throughput tells you what the system did. Lag tells you whether it is
+      # healthy. A single high lag reading is a burst and resolves itself; lag
+      # that RISES ACROSS CONSECUTIVE INTERVALS means the consumer is losing to
+      # the producer and will never catch up unaided.
+      #
+      # `deriv(...[2m]) > 0` held `for: 5m` is the Prometheus spelling of
+      # "monotonically increasing across N intervals" - the slope has to stay
+      # positive the whole time, so a spike that plateaus does not fire.
+      #
+      # This is the same instinct as scaling on queue depth rather than CPU:
+      # the queue is the thing that tells you whether you are keeping up.
+      # ===================================================================
+      - alert: ConsumerLagGrowingMonotonically
+        expr: deriv(rtdp_stream_kafka_max_offsets_behind_latest[2m]) > 0
+        for: 5m
+        labels: {severity: critical, component: stream}
+        annotations:
+          summary: "Consumer lag has grown continuously for 5 minutes"
+          description: >-
+            max_offsets_behind_latest is {{ $value | humanize }} and rising.
+            The consumer is not keeping up with the producer. Scale consumer
+            parallelism (bounded by partition count, currently 6) or reduce
+            the ingest rate. Backlog will not clear on its own.
+
+      - alert: ConsumerLagAbsoluteHigh
+        expr: rtdp_stream_kafka_max_offsets_behind_latest > 100000
+        for: 2m
+        labels: {severity: warning, component: stream}
+        annotations:
+          summary: "Consumer lag above 100k offsets"
+          description: >-
+            Large but not necessarily unhealthy - check whether it is falling.
+            Pair this with ConsumerLagGrowingMonotonically: high-and-falling is
+            recovery, high-and-rising is an incident.
+
+      # -------------------------------------------------------------------
+      # Batch duration: the leading indicator of lag growth.
+      # -------------------------------------------------------------------
+      - alert: StreamBatchDurationHigh
+        expr: histogram_quantile(0.95, rate(rtdp_stream_batch_duration_seconds_bucket[5m])) > 10
+        for: 3m
+        labels: {severity: warning, component: stream}
+        annotations:
+          summary: "p95 micro-batch duration above 10s"
+          description: >-
+            Batches are taking long enough that lag will start accumulating.
+            Usually Cassandra write pressure or an undersized executor pool.
+
+      # -------------------------------------------------------------------
+      # Reliability layer.
+      # -------------------------------------------------------------------
+      - alert: DLQFillingUp
+        expr: rate(rtdp_stream_dlq_total[5m]) > 1
+        for: 5m
+        labels: {severity: warning, component: reliability}
+        annotations:
+          summary: "Events entering the DLQ at over 1/s"
+          description: >-
+            Quarantined events are not lost, but a sustained DLQ rate means
+            something downstream is broken. Check stage label: 'parse' is bad
+            data, 'sink' is Cassandra.
+
+      - alert: CassandraRetriesExhausted
+        expr: increase(rtdp_stream_cassandra_exhausted_total[5m]) > 0
+        for: 1m
+        labels: {severity: critical, component: cassandra}
+        annotations:
+          summary: "Cassandra writes are exhausting the full retry budget"
+          description: >-
+            Writes are failing through 1s -> 2s -> 4s and reaching the DLQ.
+            Check ring health (nodetool status) and whether QUORUM is
+            achievable with the nodes currently up.
+
+      - alert: CassandraRetryRateElevated
+        expr: rate(rtdp_stream_cassandra_retries_total[5m]) > 5
+        for: 5m
+        labels: {severity: warning, component: cassandra}
+        annotations:
+          summary: "Elevated Cassandra write retry rate"
+          description: >-
+            Retries are succeeding, so nothing is being lost, but the ring is
+            under pressure and the latency tail will be showing it.
+
+      # -------------------------------------------------------------------
+      # Producer.
+      # -------------------------------------------------------------------
+      - alert: ProducerBelowTargetRate
+        expr: (rtdp_producer_target_rate > 0)
+              and (rtdp_producer_actual_rate < rtdp_producer_target_rate * 0.95)
+        for: 2m
+        labels: {severity: warning, component: producer}
+        annotations:
+          summary: "Producer is not attaining its configured target rate"
+          description: >-
+            During a throughput sweep this invalidates the step: a rate the
+            producer could not emit is not evidence about what the consumer
+            can sustain.
+
+      - alert: ProducerDeliveryFailures
+        expr: increase(rtdp_producer_delivery_failures_total[5m]) > 0
+        labels: {severity: warning, component: producer}
+        annotations:
+          summary: "Kafka delivery failures reported to the producer callback"
+          description: >-
+            Expected briefly during a broker kill. Sustained means the cluster
+            cannot satisfy acks=all with min.insync.replicas=2.
