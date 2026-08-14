@@ -1,0 +1,200 @@
+{
+  "run_id": "chaos_kill_cassandra_1",
+  "scenario": "kill_cassandra",
+  "started_at": "2026-08-14T00:14:47.094349+00:00",
+  "config": {
+    "target_rate": 800.0,
+    "duration_sec": 100.0,
+    "backoff": "1000,2000,4000",
+    "max_attempts": 4,
+    "tables": "all",
+    "partitions": 6,
+    "total_cores": 6,
+    "executor_cores": 3,
+    "executor_memory": "1g",
+    "consistency": "QUORUM",
+    "malformed_ratio": 0.0,
+    "late_ratio": 0.0,
+    "duplicate_ratio": 0.0,
+    "fault": "kill_cassandra"
+  },
+  "producer": {
+    "run_id": "chaos_kill_cassandra_1",
+    "started_at": "2026-08-14T00:12:07.371936+00:00",
+    "topic": "trips.raw",
+    "target_rate": 800.0,
+    "duration_sec": 100.019,
+    "generated": 79999,
+    "duplicates_emitted": 0,
+    "acked": 79999,
+    "delivery_failures": 0,
+    "dlq": 0,
+    "achieved_rate": 799.84,
+    "acked_rate": 799.84,
+    "rate_attainment_pct": 99.98,
+    "late_events_generated": 0,
+    "malformed_generated": 0,
+    "librdkafka_txretries": 0,
+    "librdkafka_req_timeouts": 0,
+    "app_retry_stats": {
+      "attempts": 79999,
+      "successes": 79999,
+      "failures_exhausted": 0,
+      "retries_before_success": 0,
+      "avg_retries_to_success": 0.0,
+      "total_backoff_ms": 0.0,
+      "failure_reasons": {}
+    },
+    "backoff": "backoff=1s -> 2s -> 4s max_attempts=4 jitter=+/-10%",
+    "partition_distribution": {
+      "0": {
+        "count": 13224,
+        "pct": 16.53
+      },
+      "1": {
+        "count": 13320,
+        "pct": 16.65
+      },
+      "2": {
+        "count": 13200,
+        "pct": 16.5
+      },
+      "3": {
+        "count": 13540,
+        "pct": 16.93
+      },
+      "4": {
+        "count": 13453,
+        "pct": 16.82
+      },
+      "5": {
+        "count": 13262,
+        "pct": 16.58
+      }
+    },
+    "partition_imbalance_ratio": 1.016,
+    "config": {
+      "bootstrap": "kafka1:9092,kafka2:9092,kafka3:9092",
+      "enable_idempotence": true,
+      "acks": "all",
+      "linger_ms": 20,
+      "message_timeout_ms": 120000
+    }
+  },
+  "stream": {
+    "run_id": "chaos_kill_cassandra_1",
+    "finished_at": "2026-08-14T00:14:23.111509+00:00",
+    "batches": 23,
+    "non_empty_batches": 22,
+    "input_rows": 79999,
+    "rows_written_cassandra": 239997,
+    "write_amplification": 3.0,
+    "tables": [
+      "trips_by_id",
+      "trips_by_driver_day",
+      "trips_by_city_hour"
+    ],
+    "unparseable": 0,
+    "late_events": 0,
+    "dlq_total": 0,
+    "cassandra_write_successes": 239997,
+    "cassandra_write_retries": 0,
+    "avg_retries_to_success_all_writes": 0.0,
+    "writes_needing_retry": 0,
+    "avg_retries_among_retried_writes": 0.0,
+    "mean_e2e_latency_ms_sampled": 4606.33,
+    "latency_samples": 4176,
+    "batch_seconds_p50": 4.3305,
+    "batch_seconds_p95": 7.1249,
+    "batch_seconds_p99": 7.1345,
+    "failure_reasons": {},
+    "config": {
+      "backoff": "backoff=1s -> 2s -> 4s max_attempts=4 jitter=+/-10%",
+      "consistency": "QUORUM",
+      "allowed_lateness_sec": 120,
+      "late_policy": "dlq",
+      "max_offsets_per_trigger": 200000,
+      "trigger_interval": "",
+      "executor_cores": 3,
+      "total_cores": 6,
+      "partitions": 6,
+      "latency_sample_rate": 0.05
+    }
+  },
+  "cassandra_counts": {
+    "trips_by_id": 79999,
+    "trips_by_driver_day": 79999,
+    "trips_by_city_hour": 79999
+  },
+  "dlq_detail": {
+    "topic": "trips.dlq",
+    "records": 0,
+    "distinct_event_ids": 0,
+    "records_without_event_id": 0,
+    "by_stage": {},
+    "by_reason": {},
+    "mean_retry_count_when_retried": 0.0,
+    "routing_preview": {
+      "reinject": 0,
+      "direct_write": 0,
+      "park": 0
+    },
+    "sample": []
+  },
+  "reconciliation": {
+    "kafka_acked": 79999,
+    "duplicates_emitted": 0,
+    "expected_distinct_events": 79999,
+    "written_distinct_trips": 79999,
+    "dlq_messages": 0,
+    "dlq_distinct_events": 0,
+    "accounted_for": 79999,
+    "unaccounted_silent_loss": 0,
+    "silent_loss_pct": 0.0,
+    "note": "unaccounted = expected_distinct - (written + dlq). A positive value is real, silent loss."
+  },
+  "lag": {
+    "samples": 139,
+    "max_observed": 0,
+    "final": 0,
+    "longest_monotonic_growth_run": 0,
+    "drained": true,
+    "drain_seconds": 4.01,
+    "messages_to_consume": 79999,
+    "messages_consumed": 79999
+  },
+  "batches": {
+    "count": 23,
+    "non_empty": 22
+  },
+  "fault": {
+    "fault": "kill_cassandra",
+    "target": "rtdp-cassandra3",
+    "targets": [
+      "rtdp-cassandra3"
+    ],
+    "killed_at": 1786666362.180212,
+    "dead_for_sec": 40.0,
+    "recovery_seconds": 3.368,
+    "recovery_batch_id": 7,
+    "recovered": true,
+    "target_healthy_seconds": 49.49
+  },
+  "health_gate": {
+    "containers": {
+      "rtdp-spark-worker-1": "Up 58 minutes",
+      "rtdp-spark-worker-2": "Up About a minute",
+      "rtdp-spark-driver": "Up 58 minutes",
+      "rtdp-spark-master": "Up 58 minutes (healthy)",
+      "rtdp-producer": "Up 58 minutes",
+      "rtdp-cassandra3": "Up 58 minutes (healthy)",
+      "rtdp-cassandra2": "Up 59 minutes (healthy)",
+      "rtdp-postgres": "Up 59 minutes (healthy)",
+      "rtdp-cassandra1": "Up 49 minutes (healthy)",
+      "rtdp-kafka1": "Up 59 minutes (healthy)",
+      "rtdp-kafka3": "Up 59 minutes (healthy)",
+      "rtdp-kafka2": "Up 8 minutes (healthy)"
+    },
+    "cassandra_peers": 7
+  }
+}

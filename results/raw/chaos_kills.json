@@ -1,0 +1,294 @@
+{
+  "measured_at": "2026-08-13T23:58:27.008906+00:00",
+  "config": {
+    "repeats": 2,
+    "rate": 800.0,
+    "duration": 100.0,
+    "fault_at": 35.0,
+    "restart_after": 40.0,
+    "total_cores": 6,
+    "executor_cores": 3,
+    "executor_memory": "1g",
+    "latency_sample_rate": 0.05,
+    "drain_timeout": 420,
+    "settle": 30.0,
+    "scenarios": "kill_broker,kill_executor,kill_cassandra",
+    "skip_ab": true,
+    "ab_fault": "kill_cassandra_quorum",
+    "prefix": "chaos",
+    "report": "results/raw/chaos_kills.json"
+  },
+  "scenarios": {
+    "kill_broker": {
+      "runs": [
+        {
+          "run_id": "chaos_kill_broker_1",
+          "acked": 79999,
+          "expected_distinct": 79999,
+          "written": 79999,
+          "quarantined": 0,
+          "silent_loss": 0,
+          "silent_loss_pct": 0.0,
+          "recovery_seconds": 2.476,
+          "recovered": true,
+          "target_healthy_seconds": 10.43,
+          "lag_max": 0,
+          "drain_seconds": 34.15,
+          "avg_retries_all_writes": 0.0,
+          "writes_needing_retry": 0,
+          "avg_retries_among_retried": 0.0,
+          "cassandra_retries": 0,
+          "failure_reasons": {},
+          "producer_txretries": 0,
+          "producer_req_timeouts": 0,
+          "achieved_rate": 799.92
+        },
+        {
+          "run_id": "chaos_kill_broker_2",
+          "acked": 79998,
+          "expected_distinct": 79998,
+          "written": 79998,
+          "quarantined": 0,
+          "silent_loss": 0,
+          "silent_loss_pct": 0.0,
+          "recovery_seconds": 1.612,
+          "recovered": true,
+          "target_healthy_seconds": 23.18,
+          "lag_max": 0,
+          "drain_seconds": 11.03,
+          "avg_retries_all_writes": 0.0,
+          "writes_needing_retry": 0,
+          "avg_retries_among_retried": 0.0,
+          "cassandra_retries": 0,
+          "failure_reasons": {},
+          "producer_txretries": 0,
+          "producer_req_timeouts": 0,
+          "achieved_rate": 799.73
+        }
+      ],
+      "recovery_seconds": {
+        "n": 2,
+        "mean": 2.044,
+        "median": 2.044,
+        "min": 1.612,
+        "max": 2.476,
+        "stdev": 0.611
+      },
+      "silent_loss": {
+        "n": 2,
+        "mean": 0.0,
+        "median": 0.0,
+        "min": 0,
+        "max": 0,
+        "stdev": 0.0
+      },
+      "quarantined": {
+        "n": 2,
+        "mean": 0.0,
+        "median": 0.0,
+        "min": 0,
+        "max": 0,
+        "stdev": 0.0
+      },
+      "lag_max": {
+        "n": 2,
+        "mean": 0.0,
+        "median": 0.0,
+        "min": 0,
+        "max": 0,
+        "stdev": 0.0
+      },
+      "avg_retries_among_retried": {
+        "n": 2,
+        "mean": 0.0,
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0,
+        "stdev": 0.0
+      },
+      "all_recovered": true,
+      "zero_silent_loss_every_run": true
+    },
+    "kill_executor": {
+      "runs": [
+        {
+          "run_id": "chaos_kill_executor_1",
+          "acked": 79999,
+          "expected_distinct": 79999,
+          "written": 79999,
+          "quarantined": 0,
+          "silent_loss": 0,
+          "silent_loss_pct": 0.0,
+          "recovery_seconds": 9.09,
+          "recovered": true,
+          "target_healthy_seconds": 0.05,
+          "lag_max": 0,
+          "drain_seconds": 21.07,
+          "avg_retries_all_writes": 0.0,
+          "writes_needing_retry": 0,
+          "avg_retries_among_retried": 0.0,
+          "cassandra_retries": 0,
+          "failure_reasons": {},
+          "producer_txretries": 0,
+          "producer_req_timeouts": 0,
+          "achieved_rate": 799.73
+        },
+        {
+          "run_id": "chaos_kill_executor_2",
+          "acked": 79998,
+          "expected_distinct": 79998,
+          "written": 79998,
+          "quarantined": 0,
+          "silent_loss": 0,
+          "silent_loss_pct": 0.0,
+          "recovery_seconds": 0.019,
+          "recovered": true,
+          "target_healthy_seconds": 0.04,
+          "lag_max": 0,
+          "drain_seconds": 22.09,
+          "avg_retries_all_writes": 0.0,
+          "writes_needing_retry": 0,
+          "avg_retries_among_retried": 0.0,
+          "cassandra_retries": 0,
+          "failure_reasons": {},
+          "producer_txretries": 0,
+          "producer_req_timeouts": 0,
+          "achieved_rate": 799.74
+        }
+      ],
+      "recovery_seconds": {
+        "n": 2,
+        "mean": 4.554,
+        "median": 4.554,
+        "min": 0.019,
+        "max": 9.09,
+        "stdev": 6.414
+      },
+      "silent_loss": {
+        "n": 2,
+        "mean": 0.0,
+        "median": 0.0,
+        "min": 0,
+        "max": 0,
+        "stdev": 0.0
+      },
+      "quarantined": {
+        "n": 2,
+        "mean": 0.0,
+        "median": 0.0,
+        "min": 0,
+        "max": 0,
+        "stdev": 0.0
+      },
+      "lag_max": {
+        "n": 2,
+        "mean": 0.0,
+        "median": 0.0,
+        "min": 0,
+        "max": 0,
+        "stdev": 0.0
+      },
+      "avg_retries_among_retried": {
+        "n": 2,
+        "mean": 0.0,
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0,
+        "stdev": 0.0
+      },
+      "all_recovered": true,
+      "zero_silent_loss_every_run": true
+    },
+    "kill_cassandra": {
+      "runs": [
+        {
+          "run_id": "chaos_kill_cassandra_1",
+          "acked": 79999,
+          "expected_distinct": 79999,
+          "written": 79999,
+          "quarantined": 0,
+          "silent_loss": 0,
+          "silent_loss_pct": 0.0,
+          "recovery_seconds": 3.368,
+          "recovered": true,
+          "target_healthy_seconds": 49.49,
+          "lag_max": 0,
+          "drain_seconds": 4.01,
+          "avg_retries_all_writes": 0.0,
+          "writes_needing_retry": 0,
+          "avg_retries_among_retried": 0.0,
+          "cassandra_retries": 0,
+          "failure_reasons": {},
+          "producer_txretries": 0,
+          "producer_req_timeouts": 0,
+          "achieved_rate": 799.84
+        },
+        {
+          "run_id": "chaos_kill_cassandra_2",
+          "acked": 79999,
+          "expected_distinct": 79999,
+          "written": 80045,
+          "quarantined": 0,
+          "silent_loss": -46,
+          "silent_loss_pct": -0.0575,
+          "recovery_seconds": 1.519,
+          "recovered": true,
+          "target_healthy_seconds": 24.8,
+          "lag_max": 0,
+          "drain_seconds": 4.03,
+          "avg_retries_all_writes": 0.0,
+          "writes_needing_retry": 0,
+          "avg_retries_among_retried": 0.0,
+          "cassandra_retries": 0,
+          "failure_reasons": {},
+          "producer_txretries": 0,
+          "producer_req_timeouts": 0,
+          "achieved_rate": 799.91
+        }
+      ],
+      "recovery_seconds": {
+        "n": 2,
+        "mean": 2.443,
+        "median": 2.443,
+        "min": 1.519,
+        "max": 3.368,
+        "stdev": 1.307
+      },
+      "silent_loss": {
+        "n": 2,
+        "mean": -23.0,
+        "median": -23.0,
+        "min": -46,
+        "max": 0,
+        "stdev": 32.527
+      },
+      "quarantined": {
+        "n": 2,
+        "mean": 0.0,
+        "median": 0.0,
+        "min": 0,
+        "max": 0,
+        "stdev": 0.0
+      },
+      "lag_max": {
+        "n": 2,
+        "mean": 0.0,
+        "median": 0.0,
+        "min": 0,
+        "max": 0,
+        "stdev": 0.0
+      },
+      "avg_retries_among_retried": {
+        "n": 2,
+        "mean": 0.0,
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0,
+        "stdev": 0.0
+      },
+      "all_recovered": true,
+      "zero_silent_loss_every_run": true
+    }
+  },
+  "backoff_ab": null
+}

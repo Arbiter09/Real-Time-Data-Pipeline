@@ -504,12 +504,23 @@ class Scenario:
             dlq_run = dlq_msgs   # inspection failed; fall back to raw count
         cass = self.count_cassandra()
 
+        # AUTHORITATIVE BASE: what Kafka actually persisted, from its own end
+        # offsets - not the producer's `acked` counter.
+        #
+        # `acked` counts delivery CALLBACKS that fired client-side. When a
+        # broker is killed mid-run, some callbacks have not fired by the time
+        # flush() times out even though Kafka durably holds the message. Using
+        # `acked` as the denominator then makes the pipeline look like it
+        # invented rows: a chaos run reported -46 "silent loss" (more rows in
+        # Cassandra than the producer thought it sent) before this was fixed.
+        kafka_messages = max(0, topic_count("trips.raw") - self.raw_before)
         acked = producer.get("acked", 0)
         written_distinct = cass.get("trips_by_id", 0) - self.trips_before
         # Duplicates are emitted deliberately and MUST collapse via the primary
         # key, so the denominator is distinct events, not messages sent.
         dupes = producer.get("duplicates_emitted", 0)
-        expected_distinct = acked - dupes
+        expected_distinct = kafka_messages - dupes
+        callback_shortfall = kafka_messages - acked
 
         accounted = written_distinct + dlq_run
         unaccounted = expected_distinct - accounted
@@ -542,6 +553,9 @@ class Scenario:
             "cassandra_counts": cass,
             "dlq_detail": dlq_info,
             "reconciliation": {
+                "kafka_messages_persisted": kafka_messages,
+                "producer_acked_callbacks": acked,
+                "callback_shortfall": callback_shortfall,
                 "kafka_acked": acked,
                 "duplicates_emitted": dupes,
                 "expected_distinct_events": expected_distinct,
@@ -552,8 +566,12 @@ class Scenario:
                 "unaccounted_silent_loss": unaccounted,
                 "silent_loss_pct": (round(100 * unaccounted / expected_distinct, 4)
                                     if expected_distinct else None),
-                "note": ("unaccounted = expected_distinct - (written + dlq). "
-                         "A positive value is real, silent loss."),
+                "note": ("unaccounted = expected_distinct - (written + dlq), "
+                         "where expected_distinct comes from Kafka's end "
+                         "offsets. A positive value is real, silent loss. "
+                         "callback_shortfall > 0 just means some producer "
+                         "delivery callbacks had not fired at flush time; "
+                         "those messages were still persisted by Kafka."),
             },
             "lag": {
                 "samples": len(lag),
@@ -672,7 +690,8 @@ def _print_summary(r: Dict[str, Any]) -> None:
     print(f"  target rate           {r['config']['target_rate']}/s")
     print(f"  achieved rate         {p.get('achieved_rate')}/s "
           f"({p.get('rate_attainment_pct')}% of target)")
-    print(f"  kafka acked           {rec['kafka_acked']}")
+    print(f"  kafka persisted       {rec['kafka_messages_persisted']} "
+          f"(producer callbacks: {rec['producer_acked_callbacks']})")
     print(f"  expected distinct     {rec['expected_distinct_events']}")
     print(f"  written to Cassandra  {rec['written_distinct_trips']}")
     print(f"  DLQ (replayable)      {rec['dlq_distinct_events']} distinct "

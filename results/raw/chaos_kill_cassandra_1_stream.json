@@ -1,0 +1,40 @@
+{
+  "run_id": "chaos_kill_cassandra_1",
+  "finished_at": "2026-08-14T00:14:23.111509+00:00",
+  "batches": 23,
+  "non_empty_batches": 22,
+  "input_rows": 79999,
+  "rows_written_cassandra": 239997,
+  "write_amplification": 3.0,
+  "tables": [
+    "trips_by_id",
+    "trips_by_driver_day",
+    "trips_by_city_hour"
+  ],
+  "unparseable": 0,
+  "late_events": 0,
+  "dlq_total": 0,
+  "cassandra_write_successes": 239997,
+  "cassandra_write_retries": 0,
+  "avg_retries_to_success_all_writes": 0.0,
+  "writes_needing_retry": 0,
+  "avg_retries_among_retried_writes": 0.0,
+  "mean_e2e_latency_ms_sampled": 4606.33,
+  "latency_samples": 4176,
+  "batch_seconds_p50": 4.3305,
+  "batch_seconds_p95": 7.1249,
+  "batch_seconds_p99": 7.1345,
+  "failure_reasons": {},
+  "config": {
+    "backoff": "backoff=1s -> 2s -> 4s max_attempts=4 jitter=+/-10%",
+    "consistency": "QUORUM",
+    "allowed_lateness_sec": 120,
+    "late_policy": "dlq",
+    "max_offsets_per_trigger": 200000,
+    "trigger_interval": "",
+    "executor_cores": 3,
+    "total_cores": 6,
+    "partitions": 6,
+    "latency_sample_rate": 0.05
+  }
+}
