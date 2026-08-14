@@ -12,9 +12,10 @@ The point of this project is **streaming reliability** — behaviour under
 failure and load, not that data moved on the happy path.
 
 > **Every number in this README was produced by a harness in this repo, and
-> the harness is named next to the number.** Where a measurement has not been
-> taken yet, the table says so rather than carrying an estimate. Raw harness
-> output is committed under `results/`.
+> the harness is named next to the number.** Raw harness output is committed
+> under `results/raw/`. Two of the original claims did not survive measurement
+> and are marked as such; one was exceeded. The Airflow DAGs were never
+> executed and are labelled as design rather than evidence.
 
 ---
 
