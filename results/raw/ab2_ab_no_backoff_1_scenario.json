@@ -1,0 +1,265 @@
+{
+  "run_id": "ab2_ab_no_backoff_1",
+  "scenario": "backoff_ab_no_backoff",
+  "started_at": "2026-08-14T00:55:11.372628+00:00",
+  "config": {
+    "target_rate": 800.0,
+    "duration_sec": 80.0,
+    "backoff": "DISABLED",
+    "max_attempts": 4,
+    "tables": "all",
+    "partitions": 6,
+    "total_cores": 6,
+    "executor_cores": 3,
+    "executor_memory": "1g",
+    "consistency": "QUORUM",
+    "malformed_ratio": 0.0,
+    "late_ratio": 0.0,
+    "duplicate_ratio": 0.0,
+    "fault": "kill_cassandra_quorum"
+  },
+  "producer": {
+    "run_id": "ab2_ab_no_backoff_1",
+    "started_at": "2026-08-14T00:53:06.429556+00:00",
+    "topic": "trips.raw",
+    "target_rate": 800.0,
+    "duration_sec": 80.049,
+    "generated": 63998,
+    "duplicates_emitted": 0,
+    "acked": 63998,
+    "delivery_failures": 0,
+    "dlq": 0,
+    "achieved_rate": 799.49,
+    "acked_rate": 799.49,
+    "rate_attainment_pct": 99.94,
+    "late_events_generated": 0,
+    "malformed_generated": 0,
+    "librdkafka_txretries": 0,
+    "librdkafka_req_timeouts": 0,
+    "app_retry_stats": {
+      "attempts": 63998,
+      "successes": 63998,
+      "failures_exhausted": 0,
+      "retries_before_success": 0,
+      "avg_retries_to_success": 0.0,
+      "total_backoff_ms": 0.0,
+      "failure_reasons": {}
+    },
+    "backoff": "backoff=DISABLED max_attempts=4",
+    "partition_distribution": {
+      "0": {
+        "count": 10566,
+        "pct": 16.51
+      },
+      "1": {
+        "count": 10838,
+        "pct": 16.93
+      },
+      "2": {
+        "count": 10704,
+        "pct": 16.73
+      },
+      "3": {
+        "count": 10631,
+        "pct": 16.61
+      },
+      "4": {
+        "count": 10692,
+        "pct": 16.71
+      },
+      "5": {
+        "count": 10567,
+        "pct": 16.51
+      }
+    },
+    "partition_imbalance_ratio": 1.016,
+    "config": {
+      "bootstrap": "kafka1:9092,kafka2:9092,kafka3:9092",
+      "enable_idempotence": true,
+      "acks": "all",
+      "linger_ms": 20,
+      "message_timeout_ms": 120000
+    }
+  },
+  "stream": {
+    "run_id": "ab2_ab_no_backoff_1",
+    "finished_at": "2026-08-14T00:54:53.887306+00:00",
+    "batches": 11,
+    "non_empty_batches": 10,
+    "input_rows": 63998,
+    "rows_written_cassandra": 191971,
+    "write_amplification": 3.0,
+    "tables": [
+      "trips_by_id",
+      "trips_by_driver_day",
+      "trips_by_city_hour"
+    ],
+    "unparseable": 0,
+    "late_events": 0,
+    "dlq_total": 23,
+    "cassandra_write_successes": 191971,
+    "cassandra_write_retries": 6291,
+    "avg_retries_to_success_all_writes": 0.03277,
+    "writes_needing_retry": 6280,
+    "avg_retries_among_retried_writes": 1.002,
+    "mean_e2e_latency_ms_sampled": 25391.16,
+    "latency_samples": 3331,
+    "batch_seconds_p50": 3.2903,
+    "batch_seconds_p95": 49.2184,
+    "batch_seconds_p99": 49.2184,
+    "failure_reasons": {
+      "NoHostAvailable": 5229,
+      "OperationTimedOut": 2,
+      "WriteTimeout": 1152
+    },
+    "config": {
+      "backoff": "backoff=DISABLED max_attempts=4",
+      "consistency": "QUORUM",
+      "allowed_lateness_sec": 120,
+      "late_policy": "dlq",
+      "max_offsets_per_trigger": 200000,
+      "trigger_interval": "",
+      "executor_cores": 3,
+      "total_cores": 6,
+      "partitions": 6,
+      "latency_sample_rate": 0.05
+    }
+  },
+  "cassandra_counts": {
+    "trips_by_id": 63998,
+    "trips_by_driver_day": 63998,
+    "trips_by_city_hour": 63998
+  },
+  "dlq_detail": {
+    "topic": "trips.dlq",
+    "records": 23,
+    "distinct_event_ids": 10,
+    "records_without_event_id": 0,
+    "by_stage": {
+      "cassandra_sink": 23
+    },
+    "by_reason": {
+      "NoHostAvailable": 23
+    },
+    "mean_retry_count_when_retried": 4.0,
+    "routing_preview": {
+      "reinject": 23,
+      "direct_write": 0,
+      "park": 0
+    },
+    "sample": [
+      {
+        "original_payload": "{\"event_id\":\"25894caa-08ee-4266-aa0d-49118b31a305\",\"trip_id\":\"4b3b9165-f9c3-4d1d-8b67-720edef53701\",\"event_time\":\"2026-08-14T00:53:28.988Z\",\"produced_at_ms\":1786668810056,\"city_id\":\"sea\",\"driver_id\":\"d-003701\",\"rider_id\":\"r-035170\",\"pickup_zone_id\":8,\"dropoff_zone_id\":27,\"vehicle_class\":\"xl\",\"payment_type\":\"card\",\"distance_km\":3.638,\"duration_sec\":211,\"fare_amount\":5.0,\"surge_multiplier\":1.0,\"status\":\"cancelled\",\"producer_id\":\"p-1\",\"schema_version\":1}",
+        "failure_reason": "NoHostAvailable: ('Unable to complete the operation against any hosts', {<Host: 172.26.0.6:9042 dc1>: Unavailable('Error from server: code=1000 [Unavailable exception] message=\"Cannot achieve consistency level QUORUM\" info={\\'consistency\\': \\'QUORUM\\', \\'required_replicas\\': 2, \\'alive_replicas\\': 1}')})",
+        "failure_stage": "cassandra_sink",
+        "retry_count": 4,
+        "first_failed_at_ms": 1786668844622,
+        "quarantined_at_ms": 1786668844622,
+        "event_id": "25894caa-08ee-4266-aa0d-49118b31a305",
+        "source_topic": "trips.raw",
+        "source_partition": null,
+        "source_offset": null,
+        "replay_count": 0,
+        "host": "spark-worker-2",
+        "dlq_schema_version": 1,
+        "_partition": 2,
+        "_offset": 194
+      },
+      {
+        "original_payload": "{\"event_id\":\"26b75ccb-4b52-456d-9d1e-18fcf89cc061\",\"trip_id\":\"5819315f-68c8-4e72-89d8-6def7df683c6\",\"event_time\":\"2026-08-14T00:53:29.335Z\",\"produced_at_ms\":1786668810064,\"city_id\":\"lax\",\"driver_id\":\"d-004866\",\"rider_id\":\"r-013114\",\"pickup_zone_id\":19,\"dropoff_zone_id\":8,\"vehicle_class\":\"comfort\",\"payment_type\":\"card\",\"distance_km\":5.985,\"duration_sec\":249,\"fare_amount\":5.0,\"surge_multiplier\":1.0,\"status\":\"cancelled\",\"producer_id\":\"p-1\",\"schema_version\":1}",
+        "failure_reason": "NoHostAvailable: ('Unable to complete the operation against any hosts', {<Host: 172.26.0.6:9042 dc1>: Unavailable('Error from server: code=1000 [Unavailable exception] message=\"Cannot achieve consistency level QUORUM\" info={\\'consistency\\': \\'QUORUM\\', \\'required_replicas\\': 2, \\'alive_replicas\\': 1}')})",
+        "failure_stage": "cassandra_sink",
+        "retry_count": 4,
+        "first_failed_at_ms": 1786668847639,
+        "quarantined_at_ms": 1786668847639,
+        "event_id": "26b75ccb-4b52-456d-9d1e-18fcf89cc061",
+        "source_topic": "trips.raw",
+        "source_partition": null,
+        "source_offset": null,
+        "replay_count": 0,
+        "host": "spark-worker-2",
+        "dlq_schema_version": 1,
+        "_partition": 2,
+        "_offset": 195
+      },
+      {
+        "original_payload": "{\"event_id\":\"26b75ccb-4b52-456d-9d1e-18fcf89cc061\",\"trip_id\":\"5819315f-68c8-4e72-89d8-6def7df683c6\",\"event_time\":\"2026-08-14T00:53:29.335Z\",\"produced_at_ms\":1786668810064,\"city_id\":\"lax\",\"driver_id\":\"d-004866\",\"rider_id\":\"r-013114\",\"pickup_zone_id\":19,\"dropoff_zone_id\":8,\"vehicle_class\":\"comfort\",\"payment_type\":\"card\",\"distance_km\":5.985,\"duration_sec\":249,\"fare_amount\":5.0,\"surge_multiplier\":1.0,\"status\":\"cancelled\",\"producer_id\":\"p-1\",\"schema_version\":1}",
+        "failure_reason": "NoHostAvailable: ('Unable to complete the operation against any hosts', {<Host: 172.26.0.6:9042 dc1>: Unavailable('Error from server: code=1000 [Unavailable exception] message=\"Cannot achieve consistency level QUORUM\" info={\\'consistency\\': \\'QUORUM\\', \\'required_replicas\\': 2, \\'alive_replicas\\': 1}')})",
+        "failure_stage": "cassandra_sink",
+        "retry_count": 4,
+        "first_failed_at_ms": 1786668850529,
+        "quarantined_at_ms": 1786668850529,
+        "event_id": "26b75ccb-4b52-456d-9d1e-18fcf89cc061",
+        "source_topic": "trips.raw",
+        "source_partition": null,
+        "source_offset": null,
+        "replay_count": 0,
+        "host": "spark-worker-2",
+        "dlq_schema_version": 1,
+        "_partition": 2,
+        "_offset": 196
+      }
+    ]
+  },
+  "reconciliation": {
+    "kafka_messages_persisted": 63998,
+    "producer_acked_callbacks": 63998,
+    "callback_shortfall": 0,
+    "kafka_acked": 63998,
+    "duplicates_emitted": 0,
+    "expected_distinct_events": 63998,
+    "written_distinct_trips": 63998,
+    "dlq_messages": 23,
+    "dlq_distinct_events": 10,
+    "accounted_for": 63998,
+    "partial_write_overlap": 10,
+    "unaccounted_silent_loss": 0,
+    "silent_loss_pct": 0.0,
+    "note": "unaccounted = expected_distinct - (written + dlq), where expected_distinct comes from Kafka's end offsets. A positive value is real, silent loss. callback_shortfall > 0 just means some producer delivery callbacks had not fired at flush time; those messages were still persisted by Kafka."
+  },
+  "lag": {
+    "samples": 112,
+    "max_observed": 0,
+    "final": 0,
+    "longest_monotonic_growth_run": 0,
+    "drained": true,
+    "drain_seconds": 21.08,
+    "messages_to_consume": 63998,
+    "messages_consumed": 63998
+  },
+  "batches": {
+    "count": 11,
+    "non_empty": 10
+  },
+  "fault": {
+    "fault": "kill_cassandra_quorum",
+    "target": "rtdp-cassandra2,rtdp-cassandra3",
+    "targets": [
+      "rtdp-cassandra2",
+      "rtdp-cassandra3"
+    ],
+    "killed_at": 1786668811.252001,
+    "dead_for_sec": 30.0,
+    "recovery_seconds": 1.375,
+    "recovery_batch_id": 7,
+    "recovered": true,
+    "target_healthy_seconds": 14.43
+  },
+  "health_gate": {
+    "containers": {
+      "rtdp-spark-worker-1": "Up 2 hours",
+      "rtdp-spark-worker-2": "Up 42 minutes",
+      "rtdp-spark-driver": "Up 2 hours",
+      "rtdp-spark-master": "Up 2 hours (healthy)",
+      "rtdp-producer": "Up 2 hours",
+      "rtdp-cassandra3": "Up About a minute (healthy)",
+      "rtdp-cassandra2": "Up About a minute (healthy)",
+      "rtdp-postgres": "Up 2 hours (healthy)",
+      "rtdp-cassandra1": "Up 2 hours (healthy)",
+      "rtdp-kafka1": "Up 2 hours (healthy)",
+      "rtdp-kafka3": "Up 2 hours (healthy)",
+      "rtdp-kafka2": "Up 49 minutes (healthy)"
+    },
+    "cassandra_peers": 7
+  }
+}

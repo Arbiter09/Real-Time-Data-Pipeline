@@ -1,0 +1,44 @@
+{
+  "run_id": "ab2_ab_with_backoff_1",
+  "finished_at": "2026-08-14T00:52:02.561139+00:00",
+  "batches": 12,
+  "non_empty_batches": 11,
+  "input_rows": 63997,
+  "rows_written_cassandra": 191972,
+  "write_amplification": 3.0,
+  "tables": [
+    "trips_by_id",
+    "trips_by_driver_day",
+    "trips_by_city_hour"
+  ],
+  "unparseable": 0,
+  "late_events": 0,
+  "dlq_total": 19,
+  "cassandra_write_successes": 191972,
+  "cassandra_write_retries": 4656,
+  "avg_retries_to_success_all_writes": 0.02425,
+  "writes_needing_retry": 4646,
+  "avg_retries_among_retried_writes": 1.002,
+  "mean_e2e_latency_ms_sampled": 24513.94,
+  "latency_samples": 3022,
+  "batch_seconds_p50": 3.0575,
+  "batch_seconds_p95": 46.7582,
+  "batch_seconds_p99": 46.7582,
+  "failure_reasons": {
+    "NoHostAvailable": 3575,
+    "OperationTimedOut": 5,
+    "WriteTimeout": 1152
+  },
+  "config": {
+    "backoff": "backoff=1s -> 2s -> 4s max_attempts=4 jitter=+/-10%",
+    "consistency": "QUORUM",
+    "allowed_lateness_sec": 120,
+    "late_policy": "dlq",
+    "max_offsets_per_trigger": 200000,
+    "trigger_interval": "",
+    "executor_cores": 3,
+    "total_cores": 6,
+    "partitions": 6,
+    "latency_sample_rate": 0.05
+  }
+}

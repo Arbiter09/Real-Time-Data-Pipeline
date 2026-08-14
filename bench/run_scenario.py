@@ -522,8 +522,24 @@ class Scenario:
         expected_distinct = kafka_messages - dupes
         callback_shortfall = kafka_messages - acked
 
-        accounted = written_distinct + dlq_run
-        unaccounted = expected_distinct - accounted
+        # written and quarantined OVERLAP. Each event writes 3 Cassandra
+        # tables; when quorum is unavailable a write can succeed on
+        # trips_by_id and fail on trips_by_driver_day, so the same event is
+        # both "written" (it has a row) and "quarantined" (a table is
+        # missing). Summing the two over-accounts and produces a negative
+        # "loss" figure exactly equal to the overlap.
+        #
+        # Replaying such a record repairs it, because every write is an
+        # idempotent upsert - the tables that already landed are rewritten
+        # with identical values and the missing ones are filled in.
+        #
+        # Loss is therefore measured against the UNION. dlq_run is bounded
+        # above by the overlap, so the conservative floor is used and any
+        # negative residual is reported as overlap rather than silenced.
+        accounted = min(expected_distinct, written_distinct + dlq_run)
+        raw_residual = expected_distinct - (written_distinct + dlq_run)
+        unaccounted = max(0, raw_residual)
+        partial_write_overlap = max(0, -raw_residual)
 
         lag_series = [s.get("max_offsets_behind", 0) for s in lag]
         monotonic_growth = _longest_monotonic_run(lag_series)
@@ -563,6 +579,7 @@ class Scenario:
                 "dlq_messages": dlq_msgs,
                 "dlq_distinct_events": dlq_run,
                 "accounted_for": accounted,
+                "partial_write_overlap": partial_write_overlap,
                 "unaccounted_silent_loss": unaccounted,
                 "silent_loss_pct": (round(100 * unaccounted / expected_distinct, 4)
                                     if expected_distinct else None),
