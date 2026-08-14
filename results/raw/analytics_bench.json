@@ -1,0 +1,229 @@
+{
+  "measured_at": "2026-08-14T01:32:53.494872+00:00",
+  "corpus_rows": 3000000,
+  "window": {
+    "start": "2026-06-01",
+    "end": "2026-07-01"
+  },
+  "protocol": {
+    "iterations": 9,
+    "warmups": 3,
+    "interleaved": true,
+    "statistic": "median of interleaved timed runs"
+  },
+  "queries": {
+    "q1_revenue_by_region_day": {
+      "description": "Revenue and trip count by region by day over the window",
+      "equivalent": true,
+      "result_rows": 120,
+      "baseline": {
+        "runs": 9,
+        "median_ms": 1999.335,
+        "mean_ms": 2361.419,
+        "min_ms": 1712.251,
+        "max_ms": 3811.009,
+        "p95_ms": 3811.009,
+        "stdev_ms": 713.714
+      },
+      "star": {
+        "runs": 9,
+        "median_ms": 446.355,
+        "mean_ms": 461.188,
+        "min_ms": 336.286,
+        "max_ms": 671.972,
+        "p95_ms": 671.972,
+        "stdev_ms": 106.433
+      },
+      "speedup_x": 4.479,
+      "faster_arm": "star",
+      "baseline_plan": {
+        "node": "Aggregate",
+        "total_ms": 2082.534,
+        "planning_ms": 0.202,
+        "shared_hit": 608,
+        "shared_read": 61160,
+        "rows": 120
+      },
+      "star_plan": {
+        "node": "Aggregate",
+        "total_ms": 498.913,
+        "planning_ms": 0.265,
+        "shared_hit": 5207,
+        "shared_read": 31879,
+        "rows": 120
+      }
+    },
+    "q2_top_drivers_by_revenue": {
+      "description": "Top 25 drivers by revenue in the window",
+      "equivalent": true,
+      "result_rows": 25,
+      "baseline": {
+        "runs": 9,
+        "median_ms": 465.813,
+        "mean_ms": 599.754,
+        "min_ms": 452.409,
+        "max_ms": 1271.337,
+        "p95_ms": 1271.337,
+        "stdev_ms": 264.329
+      },
+      "star": {
+        "runs": 9,
+        "median_ms": 469.561,
+        "mean_ms": 602.909,
+        "min_ms": 444.478,
+        "max_ms": 1556.68,
+        "p95_ms": 1556.68,
+        "stdev_ms": 359.665
+      },
+      "speedup_x": 0.992,
+      "faster_arm": "baseline",
+      "baseline_plan": {
+        "node": "Limit",
+        "total_ms": 512.029,
+        "planning_ms": 0.148,
+        "shared_hit": 1904,
+        "shared_read": 59880,
+        "rows": 25
+      },
+      "star_plan": {
+        "node": "Limit",
+        "total_ms": 562.614,
+        "planning_ms": 0.258,
+        "shared_hit": 6606,
+        "shared_read": 30535,
+        "rows": 25
+      }
+    },
+    "q3_weekend_split_by_vehicle": {
+      "description": "Weekend vs weekday revenue and mean fare by vehicle class",
+      "equivalent": true,
+      "result_rows": 8,
+      "baseline": {
+        "runs": 9,
+        "median_ms": 730.42,
+        "mean_ms": 728.511,
+        "min_ms": 630.175,
+        "max_ms": 889.2,
+        "p95_ms": 889.2,
+        "stdev_ms": 88.163
+      },
+      "star": {
+        "runs": 9,
+        "median_ms": 460.811,
+        "mean_ms": 476.559,
+        "min_ms": 394.106,
+        "max_ms": 644.527,
+        "p95_ms": 644.527,
+        "stdev_ms": 83.134
+      },
+      "speedup_x": 1.585,
+      "faster_arm": "star",
+      "baseline_plan": {
+        "node": "Aggregate",
+        "total_ms": 1067.31,
+        "planning_ms": 0.293,
+        "shared_hit": 3264,
+        "shared_read": 58536,
+        "rows": 8
+      },
+      "star_plan": {
+        "node": "Aggregate",
+        "total_ms": 597.752,
+        "planning_ms": 0.305,
+        "shared_hit": 7895,
+        "shared_read": 29191,
+        "rows": 8
+      }
+    },
+    "q4_hourly_demand_by_city": {
+      "description": "Hour-of-day demand curve and mean distance per city",
+      "equivalent": true,
+      "result_rows": 192,
+      "baseline": {
+        "runs": 9,
+        "median_ms": 1962.094,
+        "mean_ms": 2299.772,
+        "min_ms": 1824.994,
+        "max_ms": 3827.307,
+        "p95_ms": 3827.307,
+        "stdev_ms": 699.017
+      },
+      "star": {
+        "runs": 9,
+        "median_ms": 372.497,
+        "mean_ms": 405.265,
+        "min_ms": 312.45,
+        "max_ms": 567.937,
+        "p95_ms": 567.937,
+        "stdev_ms": 81.386
+      },
+      "speedup_x": 5.267,
+      "faster_arm": "star",
+      "baseline_plan": {
+        "node": "Aggregate",
+        "total_ms": 2281.936,
+        "planning_ms": 0.17,
+        "shared_hit": 3744,
+        "shared_read": 58024,
+        "rows": 192
+      },
+      "star_plan": {
+        "node": "Aggregate",
+        "total_ms": 669.86,
+        "planning_ms": 0.775,
+        "shared_hit": 9215,
+        "shared_read": 27847,
+        "rows": 192
+      }
+    },
+    "q5_surge_share_by_city_week": {
+      "description": "Share of surged trips and surge revenue premium, by city by ISO week",
+      "equivalent": true,
+      "result_rows": 40,
+      "baseline": {
+        "runs": 9,
+        "median_ms": 2410.773,
+        "mean_ms": 2590.768,
+        "min_ms": 2088.275,
+        "max_ms": 3593.597,
+        "p95_ms": 3593.597,
+        "stdev_ms": 488.185
+      },
+      "star": {
+        "runs": 9,
+        "median_ms": 386.032,
+        "mean_ms": 440.794,
+        "min_ms": 328.927,
+        "max_ms": 603.609,
+        "p95_ms": 603.609,
+        "stdev_ms": 103.828
+      },
+      "speedup_x": 6.245,
+      "faster_arm": "star",
+      "baseline_plan": {
+        "node": "Aggregate",
+        "total_ms": 4596.6,
+        "planning_ms": 0.25,
+        "shared_hit": 4192,
+        "shared_read": 57576,
+        "rows": 40
+      },
+      "star_plan": {
+        "node": "Aggregate",
+        "total_ms": 477.292,
+        "planning_ms": 0.644,
+        "shared_hit": 10559,
+        "shared_read": 26503,
+        "rows": 40
+      }
+    }
+  },
+  "summary": {
+    "queries_timed": 5,
+    "queries_mismatched": 0,
+    "geometric_mean_speedup": 2.971,
+    "median_speedup": 4.479,
+    "best": 6.245,
+    "worst": 0.992
+  }
+}

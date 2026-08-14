@@ -1,0 +1,257 @@
+{
+  "measured_at": "2026-08-14T00:49:53.607653+00:00",
+  "config": {
+    "repeats": 3,
+    "rate": 800.0,
+    "duration": 80.0,
+    "fault_at": 25.0,
+    "restart_after": 30.0,
+    "total_cores": 6,
+    "executor_cores": 3,
+    "executor_memory": "1g",
+    "latency_sample_rate": 0.05,
+    "drain_timeout": 420,
+    "settle": 25.0,
+    "scenarios": "",
+    "skip_ab": false,
+    "ab_fault": "kill_cassandra_quorum",
+    "prefix": "ab2",
+    "report": "results/raw/backoff_ab_run2.json"
+  },
+  "scenarios": {},
+  "backoff_ab": {
+    "fault": "kill_cassandra_quorum",
+    "note": "Identical volume, identical fault, identical timing. The only variable is RETRY_BACKOFF_SCHEDULE_MS.",
+    "with_backoff": {
+      "runs": [
+        {
+          "run_id": "ab2_ab_with_backoff_1",
+          "acked": 63997,
+          "expected_distinct": 63997,
+          "written": 63997,
+          "quarantined": 8,
+          "silent_loss": 0,
+          "silent_loss_pct": 0.0,
+          "recovery_seconds": 0.32,
+          "recovered": true,
+          "target_healthy_seconds": 14.37,
+          "lag_max": 0,
+          "drain_seconds": 20.07,
+          "avg_retries_all_writes": 0.02425,
+          "writes_needing_retry": 4646,
+          "avg_retries_among_retried": 1.002,
+          "cassandra_retries": 4656,
+          "failure_reasons": {
+            "NoHostAvailable": 3575,
+            "OperationTimedOut": 5,
+            "WriteTimeout": 1152
+          },
+          "producer_txretries": 0,
+          "producer_req_timeouts": 0,
+          "achieved_rate": 799.52
+        },
+        {
+          "run_id": "ab2_ab_with_backoff_2",
+          "acked": 63999,
+          "expected_distinct": 63999,
+          "written": 63999,
+          "quarantined": 173,
+          "silent_loss": 0,
+          "silent_loss_pct": 0.0,
+          "recovery_seconds": null,
+          "recovered": false,
+          "target_healthy_seconds": 14.46,
+          "lag_max": 0,
+          "drain_seconds": 34.13,
+          "avg_retries_all_writes": 0.02387,
+          "writes_needing_retry": 4561,
+          "avg_retries_among_retried": 1.002,
+          "cassandra_retries": 4571,
+          "failure_reasons": {
+            "NoHostAvailable": 5353,
+            "OperationTimedOut": 9,
+            "WriteTimeout": 1153
+          },
+          "producer_txretries": 0,
+          "producer_req_timeouts": 0,
+          "achieved_rate": 799.95
+        },
+        {
+          "run_id": "ab2_ab_with_backoff_3",
+          "acked": 63999,
+          "expected_distinct": 63999,
+          "written": 63992,
+          "quarantined": 94,
+          "silent_loss": 0,
+          "silent_loss_pct": 0.0,
+          "recovery_seconds": null,
+          "recovered": false,
+          "target_healthy_seconds": 14.48,
+          "lag_max": 0,
+          "drain_seconds": 30.12,
+          "avg_retries_all_writes": 0.0375,
+          "writes_needing_retry": 7181,
+          "avg_retries_among_retried": 1.002,
+          "cassandra_retries": 7192,
+          "failure_reasons": {
+            "NoHostAvailable": 7868,
+            "OperationTimedOut": 3,
+            "WriteTimeout": 221
+          },
+          "producer_txretries": 0,
+          "producer_req_timeouts": 0,
+          "achieved_rate": 799.95
+        }
+      ],
+      "quarantined": {
+        "n": 3,
+        "mean": 91.667,
+        "median": 94,
+        "min": 8,
+        "max": 173,
+        "stdev": 82.525
+      },
+      "silent_loss": {
+        "n": 3,
+        "mean": 0.0,
+        "median": 0,
+        "min": 0,
+        "max": 0,
+        "stdev": 0.0
+      },
+      "avg_retries_among_retried": {
+        "n": 3,
+        "mean": 1.002,
+        "median": 1.002,
+        "min": 1.002,
+        "max": 1.002,
+        "stdev": 0.0
+      },
+      "recovery_seconds": {
+        "n": 1,
+        "mean": 0.32,
+        "median": 0.32,
+        "min": 0.32,
+        "max": 0.32,
+        "stdev": 0.0
+      }
+    },
+    "no_backoff": {
+      "runs": [
+        {
+          "run_id": "ab2_ab_no_backoff_1",
+          "acked": 63998,
+          "expected_distinct": 63998,
+          "written": 63998,
+          "quarantined": 10,
+          "silent_loss": 0,
+          "silent_loss_pct": 0.0,
+          "recovery_seconds": 1.375,
+          "recovered": true,
+          "target_healthy_seconds": 14.43,
+          "lag_max": 0,
+          "drain_seconds": 21.08,
+          "avg_retries_all_writes": 0.03277,
+          "writes_needing_retry": 6280,
+          "avg_retries_among_retried": 1.002,
+          "cassandra_retries": 6291,
+          "failure_reasons": {
+            "NoHostAvailable": 5229,
+            "OperationTimedOut": 2,
+            "WriteTimeout": 1152
+          },
+          "producer_txretries": 0,
+          "producer_req_timeouts": 0,
+          "achieved_rate": 799.49
+        },
+        {
+          "run_id": "ab2_ab_no_backoff_2",
+          "acked": 63999,
+          "expected_distinct": 63999,
+          "written": 63999,
+          "quarantined": 167,
+          "silent_loss": 0,
+          "silent_loss_pct": 0.0,
+          "recovery_seconds": null,
+          "recovered": false,
+          "target_healthy_seconds": 14.44,
+          "lag_max": 0,
+          "drain_seconds": 29.09,
+          "avg_retries_all_writes": 0.03478,
+          "writes_needing_retry": 6652,
+          "avg_retries_among_retried": 1.001,
+          "cassandra_retries": 6661,
+          "failure_reasons": {
+            "NoHostAvailable": 7354,
+            "OperationTimedOut": 3,
+            "WriteTimeout": 1280
+          },
+          "producer_txretries": 0,
+          "producer_req_timeouts": 0,
+          "achieved_rate": 799.93
+        },
+        {
+          "run_id": "ab2_ab_no_backoff_3",
+          "acked": 63999,
+          "expected_distinct": 63999,
+          "written": 63999,
+          "quarantined": 160,
+          "silent_loss": 0,
+          "silent_loss_pct": 0.0,
+          "recovery_seconds": null,
+          "recovered": false,
+          "target_healthy_seconds": 14.38,
+          "lag_max": 0,
+          "drain_seconds": 34.13,
+          "avg_retries_all_writes": 0.03515,
+          "writes_needing_retry": 6724,
+          "avg_retries_among_retried": 1.001,
+          "cassandra_retries": 6732,
+          "failure_reasons": {
+            "NoHostAvailable": 7353,
+            "OperationTimedOut": 3,
+            "WriteTimeout": 1280
+          },
+          "producer_txretries": 0,
+          "producer_req_timeouts": 0,
+          "achieved_rate": 799.95
+        }
+      ],
+      "quarantined": {
+        "n": 3,
+        "mean": 112.333,
+        "median": 160,
+        "min": 10,
+        "max": 167,
+        "stdev": 88.692
+      },
+      "silent_loss": {
+        "n": 3,
+        "mean": 0.0,
+        "median": 0,
+        "min": 0,
+        "max": 0,
+        "stdev": 0.0
+      },
+      "avg_retries_among_retried": {
+        "n": 3,
+        "mean": 1.001,
+        "median": 1.001,
+        "min": 1.001,
+        "max": 1.002,
+        "stdev": 0.001
+      },
+      "recovery_seconds": {
+        "n": 1,
+        "mean": 1.375,
+        "median": 1.375,
+        "min": 1.375,
+        "max": 1.375,
+        "stdev": 0.0
+      }
+    },
+    "quarantine_reduction_pct": 18.4,
+    "interpretation": "This is a reduction in events forced into QUARANTINE, not a reduction in permanent loss. Permanent loss is zero in both arms because the DLQ catches everything that exhausts its retry budget. Quoting this as 'reduced data loss' would be false.",
+    "silent_loss_zero_in_both_arms": true
+  }
+}

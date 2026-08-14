@@ -195,9 +195,9 @@ table did not already carry inline.
 | End-to-end latency | sub-second | **FALSE.** p50 1.24s, p95 5.45s at the latency floor; only 18.5% of events under 1s even when tuned for latency. |
 | Partitioned topics, parallel consumers | asserted | **6 partitions, RF=3, 6 executor cores.** Balance measured: 1.002 imbalance on `trip_id` vs 2.038 on `city_id`. |
 | Cluster shape | "multi-node cluster" | **3 brokers + 3 Cassandra nodes as containers on ONE host.** Multi-broker, not multi-node. |
-| Permanent message loss reduction | 95% | **Zero permanent loss in every run measured** — see reframing below. |
+| Permanent message loss reduction | 95% | **Not supported.** Zero permanent loss in every run, and the backoff A/B shows no reliable effect: the same experiment gave 87.7% (n=2) then 18.4% (n=3). Both arms are bimodal with identical modes. |
 | Backoff schedule | 1s → 2s → 4s | **Confirmed**, ±10% jitter, 4 attempts. Pinned by `tests/test_retry.py`. |
-| Average retries to recovery | 1.3 | **0.0 under normal operation** — no Cassandra write needed a retry across the entire sweep. Retries only occur when quorum is broken. |
+| Average retries to recovery | 1.3 | **1.00** among writes that needed a retry, identical in both A/B arms. **0.0 under normal operation** — no Cassandra write needed a retry across the entire throughput sweep. |
 | Nature of retried failures | "broker and write-timeout" | Recorded per run as actual exception types rather than asserted. |
 | Analytical query improvement | 2× | **1.53× geometric mean**, range 0.71×–3.37× (200k corpus). |
 
@@ -215,16 +215,30 @@ table did not already carry inline.
 That is worth more than the retry statistic it replaces, and it is reproducible
 with `make chaos`.
 
-### Why the loss claim needs reframing
+### Why the loss claim does not survive measurement
 
-"95% less permanent loss" invites the question of what happened to the other
-5%. The measured answer here is that **permanent loss is zero** — everything
-that exhausts its retry budget lands in the DLQ, replayable. So the backoff A/B
-measures reduction in events **forced into quarantine**, not reduction in loss.
+Two separate problems with "95% less permanent loss".
 
-The honest sentence shape:
-**"Zero silent loss; N events quarantined and replayable; backoff cut
-quarantine volume by X%."**
+**First, permanent loss is zero** — everything that exhausts its retry budget
+lands in the DLQ, replayable. So there was never a loss percentage to reduce.
+The most the experiment could measure is reduction in events forced into
+*quarantine*.
+
+**Second, even that shows no reliable effect.** Ten paired runs, one variable
+changed. The first batch said 87.7%; the second batch, same configuration, said
+18.4%. Both arms are bimodal with the *same* two modes (~10 and ~170
+quarantined), and `avg_retries_among_retried` is 1.002 in both — backoff
+changes retry spacing, not retry count, and the spacing does not change the
+outcome in this workload.
+
+Run once, this experiment produces "87.7%" and that number goes on a resume. It
+took five paired runs to see it was noise.
+
+**What to say instead** — this is measured and reproducible with `make chaos`:
+
+> Zero silent loss across broker, executor and Cassandra-node kills under
+> sustained load; 2.0s median broker failover; every quarantined event
+> replayable.
 
 ---
 

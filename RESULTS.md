@@ -111,6 +111,40 @@ some callbacks have not fired by flush time even though Kafka durably persisted
 the message. Reconciliation now uses **Kafka's own end offsets** as the
 authority and reports the callback shortfall separately.
 
+### Backoff A/B — a negative result
+
+Identical event volume, identical fault (`kill_cassandra_quorum` — TWO nodes,
+because killing one changes nothing at RF=3 and would produce two identical
+arms), identical timing. The only variable is `RETRY_BACKOFF_SCHEDULE_MS`.
+
+| Arm | Quarantined per run (n=5) | Mean | Range |
+|---|---|---|---|
+| With backoff (1s→2s→4s) | 11, 12, 8, 173, 94 | 59.6 | 8–173 |
+| Without backoff | 175, 12, 10, 167, 160 | 104.8 | 10–175 |
+
+**There is no reliable effect here, and the way the estimate moves proves it.**
+The experiment was run in two batches. The first batch (n=2) reported an 87.7%
+reduction. The second batch (n=3), same configuration, reported 18.4%. Pooled
+across all ten runs it is 43.1%. The next batch would produce a different
+number again.
+
+Both arms are **bimodal with the same two modes** — a cluster near 10 and a
+cluster near 170. Which mode a run lands in depends on whether the Cassandra
+restart happens to complete inside or outside the retry budget window, not on
+whether retries were spaced out. `avg_retries_among_retried` is **1.002 in both
+arms**: backoff changes retry *spacing*, not retry *count*, and in this
+workload the spacing does not change the outcome.
+
+**Conclusion: the 95% loss-reduction claim is not supported, and neither is any
+other percentage from this experiment.** What backoff genuinely buys — avoiding
+a thundering herd of synchronized retries against a recovering node — would
+show up as load on the coordinator, not as quarantine volume, and this harness
+does not measure it.
+
+Had this experiment been run once and stopped, it would have produced "87.7%
+reduction" and that number would have gone on a resume. It took five paired
+runs to see that the number was noise.
+
 ---
 
 ## 7.4 Consumer lag as a health signal

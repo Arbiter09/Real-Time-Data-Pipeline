@@ -1,0 +1,60 @@
+{
+  "loaded_at": "2026-08-14T01:30:15.517808+00:00",
+  "rows": 3000000,
+  "days": 30,
+  "start_date": "2026-06-01",
+  "seed": 42,
+  "load_seconds": 426.57,
+  "table_sizes": {
+    "trips_wide": {
+      "total_bytes": 978182144,
+      "heap_bytes": 506003456,
+      "total_mb": 932.87,
+      "heap_mb": 482.56,
+      "est_rows": 3000160
+    },
+    "fact_trip": {
+      "total_bytes": 471760896,
+      "heap_bytes": 303038464,
+      "total_mb": 449.91,
+      "heap_mb": 289.0,
+      "est_rows": 3000091
+    },
+    "dim_driver": {
+      "total_bytes": 630784,
+      "heap_bytes": 278528,
+      "total_mb": 0.6,
+      "heap_mb": 0.27,
+      "est_rows": 5000
+    },
+    "dim_date": {
+      "total_bytes": 49152,
+      "heap_bytes": 8192,
+      "total_mb": 0.05,
+      "heap_mb": 0.01,
+      "est_rows": 35
+    },
+    "dim_city": {
+      "total_bytes": 49152,
+      "heap_bytes": 8192,
+      "total_mb": 0.05,
+      "heap_mb": 0.01,
+      "est_rows": 8
+    },
+    "dim_vehicle": {
+      "total_bytes": 49152,
+      "heap_bytes": 8192,
+      "total_mb": 0.05,
+      "heap_mb": 0.01,
+      "est_rows": 4
+    },
+    "dim_payment": {
+      "total_bytes": 49152,
+      "heap_bytes": 8192,
+      "total_mb": 0.05,
+      "heap_mb": 0.01,
+      "est_rows": 3
+    }
+  },
+  "fact_vs_wide_heap_ratio": 0.5989
+}
