@@ -124,126 +124,102 @@ latency for every deliberately-late event.
 
 ## Measured results
 
-### Partition balance by key choice — `bench/partition_skew.py`
+Full detail with protocol notes: **[RESULTS.md](RESULTS.md)**. Raw harness
+output is committed under `results/raw/`.
 
-Reimplements Kafka's murmur2 partitioner exactly, so the answer is
-reproducible offline. 100,000 events, 6 partitions:
+### Sustained ingest — 1,200 events/sec
 
-| Key | Imbalance ratio | Hottest partition | Empty partitions |
+| Target | Achieved | Silent loss | Drain ratio | Effective | Verdict |
+|---|---|---|---|---|---|
+| 800/s | 799.9 | **0** | 0.07 | 750/s | sustained |
+| 1,000/s | 999.9 | **0** | 0.09 | 918/s | sustained |
+| **1,200/s** | **1,199.8** | **0** | **0.12** | **1,069/s** | **sustained** |
+| 1,400/s | 1,399.7 | 0 | 0.33 | 1,050/s | **failed** — consumer behind |
+
+6 partitions · 6 executor cores · RF=3 · CL=QUORUM · **3.0× write
+amplification**, so 1,200 events/sec is **3,600 Cassandra writes/sec**.
+
+A flat lag gauge was not sufficient to call a rate sustained: with a large
+`maxOffsetsPerTrigger`, Spark claims every offset each trigger and lag reads ≈0
+while batches take 50s. The sweep now also requires the consumer to keep pace.
+
+### Behaviour under induced failure
+
+Every fault is a `SIGKILL` under sustained 800 events/sec.
+
+| Fault | Recovery | Silent loss | Outcome |
 |---|---|---|---|
-| **`trip_id`** (chosen) | **1.002** | 16.7% | 0 |
-| `rider_id` | 1.023 | 17.0% | 0 |
-| `driver_id` | 1.046 | 17.4% | 0 |
-| `city_id` (rejected) | **2.038** | 34.0% | **1 of 6** |
+| Kafka broker | 2.48s / 1.61s | **0** | all recovered |
+| Spark executor | 9.09s / 0.02s | **0** | all recovered |
+| Cassandra node | 3.37s / 1.52s | **0** | all recovered |
 
-`city_id` has only 8 distinct values across 6 partitions, so assignment is
-decided by 8 hash values and cannot balance at any volume — **one partition
-receives nothing at all.** The tradeoff taken is even balance in exchange for
-per-city ordering, which nothing downstream needs.
+**Zero silent loss in all six runs.** Executor recovery is bimodal — 9.09s when
+the killed worker held active tasks, 0.02s when it did not — so both are shown
+rather than a meaningless median.
 
-Raw: [`results/raw/partition_skew.json`](results/raw/partition_skew.json)
+### End-to-end latency — sub-second does NOT hold
 
-### Analytical layer: star schema vs wide table — `bench/analytics_bench.py`
-
-Protocol: result-set equivalence asserted before any timing, both arms warmed,
-timed runs **interleaved** so machine drift hits both equally, median of 5+
-runs, **per-query ratios with no blended headline**.
-
-The baseline is deliberately fair — native types and the indexes a competent
-engineer would create. A strawman baseline would make any speedup a speedup
-over incompetence.
-
-*Preliminary, 200k-row corpus (full 3M-row run pending — see Status):*
-
-| Query | Baseline | Star | Result |
+| Operating point | p50 | p95 | % under 1s |
 |---|---|---|---|
-| Surge share by city by ISO week | 103.4 ms | 30.7 ms | **star 3.37×** |
-| Hourly demand by city | 57.0 ms | 29.0 ms | **star 1.97×** |
-| Revenue by region by day | 42.1 ms | 23.3 ms | **star 1.81×** |
-| Weekend split by vehicle class | 21.5 ms | 21.8 ms | baseline 1.02× |
-| Top 25 drivers by revenue | 21.5 ms | 30.1 ms | **baseline 1.40×** |
+| Overloaded (1,400/s) | 18,733 ms | 29,035 ms | 0% |
+| Latency-optimized (500/s, 1s trigger) | 1,791 ms | 5,580 ms | 18.5% |
+| Latency floor (300/s, 500ms trigger, 1 table) | 1,238 ms | 5,451 ms | — |
 
-Geometric mean **1.53×**; best 3.37×, worst 0.71×.
+Smaller batches improve p50 and leave the tail alone. The ~5.4s p95 floor is
+structural on this hardware.
 
-The spread is the interesting part. The star wins where a dimension supplies a
-**precomputed** attribute (`iso_week`, `is_surged`, `is_weekend`) and where the
-narrower fact row means fewer heap pages. It **loses** on top-drivers, where
-the query needs only a key the wide table already carries inline and the join
-to `dim_driver` buys nothing. Fact heap is **60%** of the wide table's.
+### Partition balance by key
 
-### Tests
+| Key | Imbalance | Empty partitions |
+|---|---|---|
+| **`trip_id`** (chosen) | **1.002** | 0 |
+| `city_id` (rejected) | **2.038** | **1 of 6** |
 
-15 passing — `make test`.
+`city_id` has 8 distinct values across 6 partitions — it cannot balance at any
+volume, and one partition receives nothing.
 
-- `tests/test_idempotency.py` — Section 5's required assertion: ingest the same
-  event twice, row counts unchanged. Includes a **control case** that fails if
-  the writes were silently no-ops, without which the idempotency tests would
-  prove nothing.
-- `tests/test_retry.py` — 12 tests pinning the backoff schedule (exactly
-  1s/2s/4s), jitter bounds, permanent-error short-circuiting, and the
-  retries-vs-attempts accounting that decides whether the reported "average
-  retries" figure is inflated by exactly 1.0.
+### Star schema vs wide table
+
+Geometric mean **1.53×** (200k-row corpus), range 0.71×–3.37×. Best: surge-by-
+week 3.37×, where the dimension supplies precomputed `iso_week`/`is_surged`.
+Worst: top-drivers 0.71×, where the join to `dim_driver` buys nothing the wide
+table did not already carry inline.
 
 ---
 
 ## Claims table
 
-Filled from harness output. **Blank rows are blank because the measurement has
-not been taken, not because it was inconvenient.**
-
 | Claim | Previously written as | Measured |
 |---|---|---|
-| Sustained ingest rate | 1,000+ events/sec | *pending — see Status* |
-| End-to-end latency | sub-second | *pending* |
-| Partitioned topics, parallel consumers | asserted | **6 partitions, RF=3, 6 executor cores.** Balance measured: 1.002 imbalance on `trip_id` |
-| Cluster shape | "multi-node cluster" | **3 brokers + 3 Cassandra nodes as containers on ONE host.** Multi-broker, not multi-node. Wording corrected. |
-| Permanent message loss reduction | 95% | *pending.* Note the reframing below — the honest metric is quarantine reduction, because permanent loss is **zero in both arms**. |
-| Backoff schedule | 1s → 2s → 4s | **Confirmed**, ±10% jitter, 4 attempts max. Pinned by `tests/test_retry.py`. |
-| Average retries to recovery | 1.3 | *pending* |
-| Nature of retried failures | "broker and write-timeout" | *pending* — the harness records actual exception types per run rather than asserting them |
-| Analytical query improvement | 2× | **1.53× geometric mean** at 200k rows; range 0.71×–3.37×. Full-corpus run pending. |
+| Sustained ingest rate | 1,000+ events/sec | **1,200 events/sec** (= 3,600 Cassandra writes/sec at 3× amplification). 1,400/s fails. |
+| End-to-end latency | sub-second | **FALSE.** p50 1.24s, p95 5.45s at the latency floor; only 18.5% of events under 1s even when tuned for latency. |
+| Partitioned topics, parallel consumers | asserted | **6 partitions, RF=3, 6 executor cores.** Balance measured: 1.002 imbalance on `trip_id` vs 2.038 on `city_id`. |
+| Cluster shape | "multi-node cluster" | **3 brokers + 3 Cassandra nodes as containers on ONE host.** Multi-broker, not multi-node. |
+| Permanent message loss reduction | 95% | **Zero permanent loss in every run measured** — see reframing below. |
+| Backoff schedule | 1s → 2s → 4s | **Confirmed**, ±10% jitter, 4 attempts. Pinned by `tests/test_retry.py`. |
+| Average retries to recovery | 1.3 | **0.0 under normal operation** — no Cassandra write needed a retry across the entire sweep. Retries only occur when quorum is broken. |
+| Nature of retried failures | "broker and write-timeout" | Recorded per run as actual exception types rather than asserted. |
+| Analytical query improvement | 2× | **1.53× geometric mean**, range 0.71×–3.37× (200k corpus). |
 
-### The loss claim needs reframing regardless of the number
+### The strongest line is not on the original list
+
+> **A Kafka broker, a Spark executor and a Cassandra node were each SIGKILLed
+> mid-stream under sustained load. Every event was accounted for: 2.0s median
+> broker failover, zero silent loss across all six runs.**
+
+That is worth more than the retry statistic it replaces, and it is reproducible
+with `make chaos`.
+
+### Why the loss claim needs reframing
 
 "95% less permanent loss" invites the question of what happened to the other
-5%. This pipeline's answer is that **permanent loss is zero** — everything that
-exhausts its retry budget lands in the DLQ, replayable. So the backoff A/B
-measures the reduction in events **forced into quarantine**, not a reduction in
-loss. Quoting it as "reduced data loss by N%" would be false in both arms.
+5%. The measured answer here is that **permanent loss is zero** — everything
+that exhausts its retry budget lands in the DLQ, replayable. So the backoff A/B
+measures reduction in events **forced into quarantine**, not reduction in loss.
 
-The honest sentence shape is:
+The honest sentence shape:
 **"Zero silent loss; N events quarantined and replayable; backoff cut
 quarantine volume by X%."**
-
----
-
-## Status
-
-**Measurement is blocked on host memory.** The full stack (3 Kafka + 3
-Cassandra + Spark + Postgres) needs ~12 GiB; Docker Desktop is currently capped
-at 7.65 GiB. Under that cap the Cassandra nodes restart-loop under write load —
-`rtdp-cassandra1` restarted 64 times during a capacity probe — and a ring that
-bounces mid-run produces numbers about the memory ceiling, not the pipeline.
-
-The stack gate catches this rather than letting it through:
-
-```bash
-make health
-```
-
-It verifies ISR completeness, `min.insync.replicas`, unclean leader election,
-ring state, an actual QUORUM write, and **flags containers that keep
-restarting** — which is how the ceiling was found.
-
-Everything else is built and tested. Once memory is available, the remaining
-figures come from:
-
-```bash
-make throughput   # 7.1  sustained rate
-make latency      # 7.2  p50/p95/p99
-make chaos        # 7.3  kill scenarios + backoff A/B
-make analytics    # 8    full-corpus star vs wide
-```
 
 ---
 
