@@ -14,8 +14,7 @@ failure and load, not that data moved on the happy path.
 > **Every number in this README was produced by a harness in this repo, and
 > the harness is named next to the number.** Raw harness output is committed
 > under `results/raw/`. Two of the original claims did not survive measurement
-> and are marked as such; one was exceeded. The Airflow DAGs were never
-> executed and are labelled as design rather than evidence.
+> and are marked as such; one was exceeded.
 
 ---
 
@@ -213,10 +212,12 @@ belongs next to the number.
 | Nature of retried failures | "broker and write-timeout" | Recorded per run as actual exception types rather than asserted. |
 | Analytical query improvement | 2× | **2.97× geometric mean** at 3M rows (median 4.48×, best 6.25×, worst 0.99×). The claim is *exceeded* — but only at realistic scale: the same benchmark gives 1.53× on 200k rows. |
 
-> **Airflow DAGs are written but never executed.** Every other component here
-> was run and measured; the DAGs were not. See
-> [`airflow/dags/README.md`](airflow/dags/README.md). They are design, not
-> evidence.
+> **Airflow DAGs verified end to end.** All three ran against live data:
+> sensor → extract → verify, DagRun success, `drift 0`, and idempotency
+> confirmed by re-running rather than asserted. The first run found a real bug
+> — Airflow's `pendulum.DateTime` has no Cassandra driver encoder, so it was
+> being spliced into CQL unquoted. Details and what is *still* unexercised:
+> [`airflow/dags/README.md`](airflow/dags/README.md).
 
 ### The strongest line is not on the original list
 

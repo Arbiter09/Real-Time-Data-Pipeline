@@ -38,10 +38,23 @@ MIN_ROWS_TO_PROCEED = 1     # an hour with genuinely no trips is still valid
 
 
 def _hour_for(context) -> datetime:
-    # Roll up the hour that just CLOSED. Rolling up the current hour would
-    # produce a partial number that a later run would silently contradict.
+    """The hour that just CLOSED, as a plain stdlib datetime.
+
+    Rolling up the current hour would produce a partial number that a later
+    run would silently contradict.
+
+    The conversion to a native `datetime` is load-bearing, not tidiness.
+    Airflow hands over a `pendulum.DateTime`, and the Cassandra driver has no
+    encoder registered for that type - so instead of binding it as a timestamp
+    it falls back to `str()` and splices the value into the CQL unquoted,
+    producing `event_hour=2026-08-14 06:00:00+00:00` and a syntax error. The
+    driver gives no hint that a parameter type is unsupported; it just emits
+    bad CQL.
+    """
     logical = context["logical_date"]
-    return logical.replace(minute=0, second=0, microsecond=0)
+    hour = logical.replace(minute=0, second=0, microsecond=0)
+    return datetime(hour.year, hour.month, hour.day, hour.hour,
+                    tzinfo=timezone.utc)
 
 
 with DAG(

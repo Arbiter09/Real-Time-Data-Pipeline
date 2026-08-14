@@ -18,6 +18,7 @@ log = logging.getLogger(__name__)
 CASSANDRA_HOSTS = os.environ.get("CASSANDRA_HOSTS", "cassandra1,cassandra2,cassandra3").split(",")
 CASSANDRA_KEYSPACE = os.environ.get("CASSANDRA_KEYSPACE", "rtdp")
 CASSANDRA_READ_CL = os.environ.get("CASSANDRA_READ_CONSISTENCY", "QUORUM")
+CASSANDRA_LOCAL_DC = os.environ.get("CASSANDRA_DC", "dc1")
 
 PG = {
     "host": os.environ.get("POSTGRES_HOST", "postgres"),
@@ -36,13 +37,33 @@ ALERT_LOG_PATH = os.environ.get("RTDP_ALERT_LOG", "/opt/airflow/logs/rtdp_alerts
 
 
 def cassandra_session():
+    """Session for the batch DAGs.
+
+    Both settings below silence warnings the driver emitted on the first real
+    run, and both are correctness knobs rather than cosmetics:
+
+      * An ExecutionProfile built with contact_points but no load-balancing
+        policy is deprecated and will raise in a future driver major. Naming
+        the local DC also stops the driver guessing it from whichever node
+        answered first.
+      * Without an explicit protocol_version the driver negotiates downward
+        (66 -> 65 -> 5) on every single connection, which is wasted round
+        trips on a task that connects, reads one hour and disconnects.
+    """
     from cassandra import ConsistencyLevel
     from cassandra.cluster import Cluster, ExecutionProfile, EXEC_PROFILE_DEFAULT
+    from cassandra.policies import DCAwareRoundRobinPolicy, TokenAwarePolicy
+
     profile = ExecutionProfile(
+        load_balancing_policy=TokenAwarePolicy(
+            DCAwareRoundRobinPolicy(local_dc=CASSANDRA_LOCAL_DC)),
         consistency_level=getattr(ConsistencyLevel, CASSANDRA_READ_CL),
         request_timeout=60.0)
-    cluster = Cluster(CASSANDRA_HOSTS,
-                      execution_profiles={EXEC_PROFILE_DEFAULT: profile})
+    cluster = Cluster(
+        CASSANDRA_HOSTS,
+        execution_profiles={EXEC_PROFILE_DEFAULT: profile},
+        protocol_version=5,
+    )
     return cluster, cluster.connect(CASSANDRA_KEYSPACE)
 
 

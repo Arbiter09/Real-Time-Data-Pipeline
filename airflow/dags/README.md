@@ -1,38 +1,70 @@
-# Airflow DAGs — WRITTEN BUT NOT EXECUTED
+# Airflow DAGs — verified against live data
 
-**Status, stated plainly: the three DAGs in this directory have not been run.**
+All three DAGs have been **executed end to end** against a running stack: real
+rows produced through Kafka → Spark → Cassandra, then rolled up into Postgres.
 
-Every other component in this repository has been executed and measured, and
-the numbers in [RESULTS.md](../../RESULTS.md) come from harnesses that actually
-ran. These DAGs are the exception. They are written and reviewed, but the
-Airflow profile was never started, so they have not been parsed by a scheduler,
-their imports have not been resolved at runtime, and no task in them has ever
-executed.
+| DAG | Schedule | Verified |
+|---|---|---|
+| `trips_batch_rollup` | hourly, 10 past | full DagRun **success** — sensor → extract → verify |
+| `dlq_drain` | every 15 min | `inspect_dlq` **success** against a live (empty) DLQ |
+| `trips_backfill` | manual | full DagRun **success** over a one-hour window |
 
-Treat them as **design, not evidence**. A reviewer should assume they contain
-the kind of errors that only a first run surfaces.
+## What the run actually proved
 
-To verify them yourself:
-
-```bash
-make airflow                       # starts scheduler + webserver on :18088
-docker exec rtdp-airflow-scheduler airflow dags list
-docker exec rtdp-airflow-scheduler airflow dags list-import-errors
-docker exec rtdp-airflow-scheduler airflow tasks test trips_batch_rollup extract_and_load_hour 2026-08-13
+```
+wait_for_hour_data   sensor: hour=2026-08-14T06:00:00Z rows_in_cassandra=22
+                     Success criteria met.
+extract_and_load_hour  extracted 22 rows → {'extracted': 22, 'loaded': 22}
+verify_hour            verified: 22 rows in Postgres, drift 0
+DagRun Finished        state=success
 ```
 
-## What each DAG is for
+**Idempotency was verified by re-running, not asserted.** Executing
+`extract_and_load_hour` a second time over the same hour left
+`trips_rollup_stage` at exactly 22 rows. That is the `ON CONFLICT (trip_id) DO
+UPDATE` doing its job, and it is why the backfill is safe to run during an
+incident rather than something you schedule for 3am behind a truncate.
 
-| DAG | Schedule | Purpose |
-|---|---|---|
-| `trips_batch_rollup` | hourly, 10 past | Cassandra → Postgres rollup, gated by a sensor on data actually landing, with an SLA on the critical path |
-| `dlq_drain` | every 15 min | Drains the DLQ back into the pipeline; refuses to run above a circuit-breaker ceiling |
-| `trips_backfill` | manual | Reprocesses an arbitrary window; safe to re-run because the load upserts on `trip_id` |
+`airflow dags list-import-errors` → **no errors** for all three DAGs.
+
+## The bug that only a first run could find
+
+The rollup DAG was wrong before it was ever executed, in a way no amount of
+re-reading would have caught:
+
+```
+cassandra.protocol.SyntaxException: line 1:84 no viable alternative at input '-08'
+(... city_id='nyc' AND event_hour=2026[-08]-14 06:00:00+00:00)
+```
+
+Airflow hands `logical_date` over as a **`pendulum.DateTime`**. The Cassandra
+driver has no encoder registered for that type, so rather than binding it as a
+timestamp parameter it falls back to `str()` and splices the value into the CQL
+**unquoted**. The driver gives no warning that a parameter type is unsupported
+— it just emits malformed CQL and the server rejects it.
+
+The fix is to convert to a native `datetime` before it reaches the driver
+(`_hour_for` in `trips_batch_rollup.py`). Every parameterised Cassandra call in
+these DAGs now receives stdlib types only.
+
+Two driver warnings surfaced by the same run were also fixed in
+`rtdp_common.cassandra_session`: an `ExecutionProfile` with contact points but
+no load-balancing policy (deprecated, will raise in a future driver major), and
+an unset `protocol_version` causing a 66 → 65 → 5 renegotiation on every
+connection.
+
+## Reproduce it
+
+```bash
+make up && make airflow
+docker exec rtdp-airflow-scheduler airflow dags list-import-errors
+docker exec rtdp-airflow-scheduler airflow dags test trips_batch_rollup 2026-08-14T06:00:00+00:00
+```
 
 ## The design arguments they encode
 
 These are the reasons Airflow is in the architecture at all rather than a cron
-line, and they stand on their own merits even though the code is unverified:
+line:
 
 - **The rollup is gated on data, not on the clock.** A timer-triggered job runs
   at H+1 whether or not hour H finished landing. Under consumer lag that rolls
@@ -47,11 +79,21 @@ line, and they stand on their own merits even though the code is unverified:
   dead Cassandra node just replays 50k failures into a still-dead node. Above
   the ceiling it refuses and alerts instead.
 
-- **The backfill is safe to run during an incident.** The load upserts on
-  `trip_id`, so reprocessing an already-loaded window converges instead of
-  double-counting. That property is inherited from the same decision that makes
-  the streaming path replay-safe: keys derived from the data.
+- **The backfill is safe to run during an incident**, verified above by
+  re-running it.
 
 - **The extract reads a time-bucketed table.** `trips_by_city_hour` is
   partitioned by `(city_id, event_hour)`, so one hour is 8 bounded partition
   reads rather than a full-ring scan.
+
+## Still not exercised
+
+Honesty about what these runs did *not* cover:
+
+- **The SLA-miss callback has never fired.** Triggering it needs a task that
+  genuinely overruns 20 minutes.
+- **The DLQ drain's re-inject and park paths** ran against an empty queue, so
+  routing was exercised only as a no-op. `make dlq-dry-run` after a
+  quorum-break run would cover them.
+- **The circuit breaker has never tripped** — it needs a DLQ above 20k records.
+- These were single runs on one host, not a soak test.
