@@ -180,10 +180,21 @@ volume, and one partition receives nothing.
 
 ### Star schema vs wide table
 
-Geometric mean **1.53×** (200k-row corpus), range 0.71×–3.37×. Best: surge-by-
-week 3.37×, where the dimension supplies precomputed `iso_week`/`is_surged`.
-Worst: top-drivers 0.71×, where the join to `dim_driver` buys nothing the wide
-table did not already carry inline.
+**3,000,000-row corpus, identical in both arms. Geometric mean 2.97×**, median
+4.48×, range 0.99×–6.25×.
+
+| Query | Baseline | Star | Result |
+|---|---|---|---|
+| Surge share by city by week | 2,410.8 ms | 386.0 ms | **6.25×** |
+| Hourly demand by city | 1,962.1 ms | 372.5 ms | **5.27×** |
+| Revenue by region by day | 1,999.3 ms | 446.4 ms | **4.48×** |
+| Weekend split by vehicle | 730.4 ms | 460.8 ms | **1.59×** |
+| Top 25 drivers | 465.8 ms | 469.6 ms | 0.99× |
+
+Fact heap is 289 MB vs the wide table's 483 MB — that size difference is the
+mechanism. **The same benchmark on a 200k-row corpus gives 1.53×**: at small
+scale everything fits in cache and the join cost dominates, so corpus size
+belongs next to the number.
 
 ---
 
@@ -199,7 +210,7 @@ table did not already carry inline.
 | Backoff schedule | 1s → 2s → 4s | **Confirmed**, ±10% jitter, 4 attempts. Pinned by `tests/test_retry.py`. |
 | Average retries to recovery | 1.3 | **1.00** among writes that needed a retry, identical in both A/B arms. **0.0 under normal operation** — no Cassandra write needed a retry across the entire throughput sweep. |
 | Nature of retried failures | "broker and write-timeout" | Recorded per run as actual exception types rather than asserted. |
-| Analytical query improvement | 2× | **1.53× geometric mean**, range 0.71×–3.37× (200k corpus). |
+| Analytical query improvement | 2× | **2.97× geometric mean** at 3M rows (median 4.48×, best 6.25×, worst 0.99×). The claim is *exceeded* — but only at realistic scale: the same benchmark gives 1.53× on 200k rows. |
 
 > **Airflow DAGs are written but never executed.** Every other component here
 > was run and measured; the DAGs were not. See

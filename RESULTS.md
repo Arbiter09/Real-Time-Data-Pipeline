@@ -197,23 +197,41 @@ The baseline is deliberately fair — native types and the indexes a competent
 engineer would create. A strawman baseline would make any speedup a speedup
 over incompetence.
 
-*Preliminary, 200k-row corpus:*
+**Corpus: 3,000,000 rows over 30 days, identical in both arms.** Fact table
+heap is **289 MB vs 483 MB** for the wide table — 59.9% of the size, which is
+the mechanism behind most of the win.
 
 | Query | Baseline | Star | Result |
 |---|---|---|---|
-| Surge share by city by ISO week | 103.4 ms | 30.7 ms | **star 3.37×** |
-| Hourly demand by city | 57.0 ms | 29.0 ms | **star 1.97×** |
-| Revenue by region by day | 42.1 ms | 23.3 ms | **star 1.81×** |
-| Weekend split by vehicle class | 21.5 ms | 21.8 ms | baseline 1.02× |
-| Top 25 drivers by revenue | 21.5 ms | 30.1 ms | **baseline 1.40×** |
+| Surge share by city by ISO week | 2,410.8 ms | 386.0 ms | **star 6.25×** |
+| Hourly demand by city | 1,962.1 ms | 372.5 ms | **star 5.27×** |
+| Revenue by region by day | 1,999.3 ms | 446.4 ms | **star 4.48×** |
+| Weekend split by vehicle class | 730.4 ms | 460.8 ms | **star 1.59×** |
+| Top 25 drivers by revenue | 465.8 ms | 469.6 ms | 0.99× (tie) |
 
-**Geometric mean 1.53×** (not 2×). Best 3.37×, worst 0.71×.
+**Geometric mean 2.97×.** Median 4.48×. Best 6.25×, worst 0.99×. All five pairs
+verified to return identical result sets before any timing was taken.
 
-The spread is the interesting part. The star wins where a dimension supplies a
-**precomputed** attribute (`iso_week`, `is_surged`, `is_weekend`) and where the
-narrower fact row means fewer heap pages — fact heap is **60%** of the wide
-table's. It **loses** on top-drivers, where the query needs only a key the wide
-table already carries inline and the join to `dim_driver` buys nothing.
+### Corpus size decides the answer
+
+The same benchmark on a 200k-row corpus gave a geometric mean of **1.53×**. At
+3M rows it gives **2.97×**. Nothing changed but the row count.
+
+The reason is that the star schema's advantage is mostly **fewer bytes to
+scan** — a 289 MB fact table versus a 483 MB wide table. At 200k rows both fit
+comfortably in cache and the join cost dominates; at 3M rows the scan is
+I/O-bound and the narrower rows win. **A benchmark run on a toy corpus would
+have understated this by half**, and one run on a corpus chosen to flatter it
+would overstate it. The row count belongs next to the number.
+
+### Why top-drivers is a tie
+
+`q2` groups by `driver_id` and needs no dimension attribute at all. The star
+pays for a join to `dim_driver` to recover a string the wide table already
+carries inline, and gets nothing back. This is the honest shape of dimensional
+modelling: it wins where dimensions supply precomputed attributes
+(`iso_week`, `is_surged`, `is_weekend`) and breaks even or loses where they
+do not.
 
 ---
 
