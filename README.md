@@ -201,6 +201,11 @@ table did not already carry inline.
 | Nature of retried failures | "broker and write-timeout" | Recorded per run as actual exception types rather than asserted. |
 | Analytical query improvement | 2× | **1.53× geometric mean**, range 0.71×–3.37× (200k corpus). |
 
+> **Airflow DAGs are written but never executed.** Every other component here
+> was run and measured; the DAGs were not. See
+> [`airflow/dags/README.md`](airflow/dags/README.md). They are design, not
+> evidence.
+
 ### The strongest line is not on the original list
 
 > **A Kafka broker, a Spark executor and a Cassandra node were each SIGKILLed
